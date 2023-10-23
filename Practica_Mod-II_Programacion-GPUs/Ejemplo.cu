@@ -25,6 +25,8 @@ __global__ void incVec(float *A, int n) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;
 
   if (i < n) {
+    // printf("Thread %d ejecutando el kernel\n", i);
+    // printf("blockIdx.x: %d, threadIdx.x: %d\n", blockIdx.x, threadIdx.x);
     A[i]++;
   }
 }
@@ -34,7 +36,14 @@ int main() {
   int N = 5000000;
   float *h_A = (float *)malloc(N * sizeof(float)); // h_A = host_A
   float *d_A;                                      // d_A = device_A                   
-  err = cudaMalloc((void **)&d_A, N * sizeof(float));
+  err = cudaMalloc((void **)&d_A, N * sizeof(float)); // Reservar memoria en la GPU
+  // medir el tiempo:
+  cudaEvent_t start, stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
+  cudaEventSynchronize(stop);
+  float elapsedTime;
+
   if (err != cudaSuccess) {
     std::string error = cudaGetErrorString(err); // devuelve una cadena de error de la última llamada a una función de la API CUDA
     std::cout << "Error reservando memoria para d_A: " << error << std::endl;
@@ -47,17 +56,22 @@ int main() {
     h_A[i] = 1.0f;
   }
 
-  err = cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice);
+  err = cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice); // Copiar el vector de la CPU a la GPU
 
-  int blockSize = 256;
+  int blockSize = 256; // cantidad de hilos por bloque, se puede cambiar a 512, 1024, ...
   int gridSize = (N + blockSize - 1) / blockSize;
-
+  
+  cudaEventRecord(start, 0); // Iniciar el cronómetro
   incVec<<<gridSize, blockSize>>>(d_A, N);
+  cudaEventRecord(stop, 0); // Parar el cronómetro
 
-  cudaMemcpy(h_A, d_A, N * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(h_A, d_A, N * sizeof(float), cudaMemcpyDeviceToHost); // Copiar el resultado de la GPU a la CPU
 
-  cudaFree(d_A);
-  free(h_A);
+  cudaFree(d_A); // Liberar memoria de la GPU
+  free(h_A);     // Liberar memoria de la CPU
+
+  cudaEventElapsedTime(&elapsedTime, start, stop); // Calcular el tiempo transcurrido
+  std::cout << "Tiempo de ejecución: " << elapsedTime << " ms" << std::endl;
 
   return 0;
 }

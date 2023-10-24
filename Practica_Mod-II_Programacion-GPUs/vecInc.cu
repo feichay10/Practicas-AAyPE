@@ -5,7 +5,7 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * @file Ejemplo.cu
+ * @file vecInc.cu
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
  * @brief Incrementar los elementos de un vector
  * @version 0.1

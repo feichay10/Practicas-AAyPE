@@ -6,6 +6,7 @@
  */
 
 #include <cuda_runtime.h>
+#include <iostream>
 
 static void CheckCudaErrorAux (const char *, unsigned, const char *, cudaError_t);
 #define CUDA_CHECK_RETURN(value) CheckCudaErrorAux(__FILE__,__LINE__, #value, value)
@@ -14,11 +15,10 @@ static void CheckCudaErrorAux (const char *, unsigned, const char *, cudaError_t
 /**
  * Host main routine
  */
-
 int main(void) {
-    // Allocate the device input vector A
-    float *d_A = NULL;
-    CUDA_CHECK_RETURN(cudaMalloc((void **)&d_A, size));
+	// Allocate the device input vector A
+	float *d_A = NULL;
+	CUDA_CHECK_RETURN(cudaMalloc((void **)&d_A, size));
 }
  
 /**

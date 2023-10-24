@@ -35,12 +35,25 @@ __global__ void sumVec(float *A, int tam_vec) {
   long long int t_ini = clock64();
   int i = blockDim.x * blockIdx.x + threadIdx.x;
 
+  // threadIdx.x == 0
+  if (i == 0) {
+    suma = 0.0;
+  }
+
   if (i < tam_vec) {
     suma = suma + A[i];
   }
   tf[i] = clock64();
   ti[i] = t_ini;
 }
+
+// atomicAdd(&suma, A[i]) {
+//   float old = *address, assumed;
+//   do {
+//     assumed = old;
+//     old = atomicCAS(address, assumed, val + assumed);
+//   } while (assumed != old);
+// }
 
 // 1. Ubicar h_A
 // 2. Inicializar h_A

@@ -22,100 +22,41 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
-#define N 1000 // Numero de elementos del vector
+__device__ float d_sum; // Variable global en el device, se inicializa a 0
 
-static void CheckCudaErrorAux (const char *, unsigned, const char *, cudaError_t);
-#define CUDA_CHECK_RETURN(value) CheckCudaErrorAux(__FILE__,__LINE__, #value, value)
-
-__device__ float suma;
-__device__ long long int ti[N];
-__device__ long long int tf[N];
-
-__global__ void sumVec(float *A, int tam_vec) {
-  long long int t_ini = clock64();
+__global__ void sumElementVector(float *d_A, int numElem) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;
-
-  // threadIdx.x == 0
-  if (i == 0) {
-    suma = 0.0;
+  if (i < numElem) {
+    atomicAdd(&d_sum, d_A[i]);
   }
-
-  if (i < tam_vec) {
-    suma = suma + A[i];
-  }
-  tf[i] = clock64();
-  ti[i] = t_ini;
 }
 
-// atomicAdd(&suma, A[i]) {
-//   float old = *address, assumed;
-//   do {
-//     assumed = old;
-//     old = atomicCAS(address, assumed, val + assumed);
-//   } while (assumed != old);
-// }
+// fabs(d_suma - h_suma ) < 1e-2
 
-// 1. Ubicar h_A
-// 2. Inicializar h_A
-//    h_A[i] = rand() / (float)RAND_MAX
-// 3. Copiar h_A a d_A
-// 4. Encontrar suma de h_A
-// 5. Invocar kernel
-// 6. Obtener 
-//     1. suma
-//     2. ti[A]
-//     3. tf[A]
-// 7. Imprimir suma tf[i]
-
-int main() {
-  float *h_A;
+// Hacerlo con patron de paralelismo: reducción
+int main(int argc, char **argv) {
+  int numElem = 1000000;
+  float h_suma = 0.0f;
+  float *h_A = (float *)malloc(numElem * sizeof(float));
   float *d_A;
-  float suma = 0.0;
-  long long int *h_ti;
-  long long int *h_tf;
-  long long int *d_ti;
-  long long int *d_tf;
-
-  h_A = (float *)malloc(N * sizeof(float));
-  h_ti = (long long int *)malloc(N * sizeof(long long int));
-  h_tf = (long long int *)malloc(N * sizeof(long long int));
-
-  for (int i = 0; i < N; i++) {
-    h_A[i] = rand() / (float)RAND_MAX;
+  float h_sumaGPU = 0.0f;
+  cudaMalloc((void **)&d_A, numElem * sizeof(float));
+  
+  for (int i = 0; i < numElem; i++) {
+    h_A[i] = h_A[i] = (float)rand()/(float)RAND_MAX;
+    h_suma += h_A[i];
   }
-
-  CUDA_CHECK_RETURN(cudaMalloc((void **)&d_A, N * sizeof(float)));
-  CUDA_CHECK_RETURN(cudaMalloc((void **)&d_ti, N * sizeof(long long int)));
-  CUDA_CHECK_RETURN(cudaMalloc((void **)&d_tf, N * sizeof(long long int)));
-
-  CUDA_CHECK_RETURN(cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice));
-
-  sumVec<<<1, N>>>(d_A, N);
-
-  CUDA_CHECK_RETURN(cudaMemcpyFromSymbol(&suma, suma, sizeof(float), 0, cudaMemcpyDeviceToHost));
-  CUDA_CHECK_RETURN(cudaMemcpyFromSymbol(h_ti, ti, N * sizeof(long long int), 0, cudaMemcpyDeviceToHost));
-  CUDA_CHECK_RETURN(cudaMemcpyFromSymbol(h_tf, tf, N * sizeof(long long int), 0, cudaMemcpyDeviceToHost));
-
-  for (int i = 0; i < N; i++) {
-    std::cout << "ti[" << i << "] = " << h_ti[i] << std::endl;
-    std::cout << "tf[" << i << "] = " << h_tf[i] << std::endl;
-  } 
-
-  std::cout << "Suma = " << suma << std::endl;
-
-  free(h_A);
-  free(h_ti);
-  free(h_tf);
+  cudaMemcpy(d_A, h_A, numElem * sizeof(float), cudaMemcpyHostToDevice);              // Copiar datos de host a device
+  sumElementVector<<<(numElem + 255) / 256, 256>>>(d_A, numElem);                     // Lanzar el kernel
+  cudaMemcpyFromSymbol(&h_sumaGPU, d_sum, sizeof(float), 0, cudaMemcpyDeviceToHost);  // Copiar datos de device a host
+  
+  std::cout << "Suma en CPU: " << h_suma << std::endl;
+  std::cout << "Suma en GPU: " << h_sumaGPU << std::endl;
+  std::cout << "Error: " << fabs(d_sum - h_suma) << std::endl;
+  
+  // Liberar memoria
   cudaFree(d_A);
-  cudaFree(d_ti);
-
+  free(h_A);
   return 0;
 }
 
-static void CheckCudaErrorAux (const char *file, unsigned line, const char *statement, cudaError_t err) {
-
-	if (err == cudaSuccess)
-		return;
-	std::cerr << statement<<" returned " << cudaGetErrorString(err) << "("<<err<< ") at "<<file<<":"<<line << std::endl;
-	exit (EXIT_FAILURE);
-}

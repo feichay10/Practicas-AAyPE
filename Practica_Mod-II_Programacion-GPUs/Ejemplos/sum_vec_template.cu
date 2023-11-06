@@ -1,13 +1,12 @@
 /*
  ============================================================================
- Name        : sumvec.cu
+ Name        : sum_vec_template.cu
  Ejemplo de suma de elementos de un vector con operaciones atómicas, medida
  de tiempos con clock64() y uso de variables ubicadas directamente en memoria
  global de la GPU. No hay garantías de corrección si se inicializa la suma así
  y hay más de un bloque de hilos por la sincronización entre bloques
  ============================================================================
  */
-
 
 #include <iostream>
 #include <numeric>
@@ -16,6 +15,10 @@
 #include <math.h>
 
 #include <cuda_runtime.h>
+
+#include <cooperative_groups.h>
+
+namespace cg = cooperative_groups;
 
 static void CheckCudaErrorAux (const char *, unsigned, const char *, cudaError_t);
 #define CUDA_CHECK_RETURN(value) CheckCudaErrorAux(__FILE__,__LINE__, #value, value)
@@ -113,6 +116,24 @@ sumVec_v2(const float *A, int numElements) {
     d_ti[i] = tini;
 }
 
+// Version de sincronización de hilos en un grid
+__global__ void
+sumVec_v3(const float *A, int numElements)  {
+    cg::grid_group grid = cg::this_grid();
+    int i = grid.thread_rank();
+    float d_suma = 0.0;
+
+    if (i < numElements) {
+        if (i == 0) {
+            d_suma = 0.0;
+        }
+        grid.sync();
+        if (i < numElements) {
+            atomicAdd(&d_suma, A[i]);
+        }
+    }
+}
+
 /**
  * Host main routine
  */
@@ -161,7 +182,8 @@ int main(void) {
     // Launch the sumVec CUDA Kernels
     int threadsPerBlock = HILOSPORBLOQUE;
     int blocksPerGrid = (numElements + threadsPerBlock - 1) / threadsPerBlock;
-    
+
+    // Suma atomica
     CUDA_CHECK_RETURN(cudaMemcpyToSymbol(d_suma, &sumini, sizeof(float)));
     printf("Kernel con N hilos y suma atómica\n");
     printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
@@ -172,6 +194,7 @@ int main(void) {
     printf("Suma = %f\n", sumatotal);
     findMinMaxTimes();
 
+    // Suma con reducción en bloque
     CUDA_CHECK_RETURN(cudaMemcpyToSymbol(d_suma, &sumini, sizeof(float)));
     printf("Kernel con reducción en bloque\n");
     printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
@@ -181,7 +204,19 @@ int main(void) {
     CUDA_CHECK_RETURN(cudaMemcpyFromSymbol(&sumatotal, d_suma, sizeof(float)));
     printf("Suma = %f\n", sumatotal);
     findMinMaxTimes();
-    
+
+    // Suma con sincronización de hilos en grid
+    // Suma con sincronización de hilos en grid
+    printf("Kernel con sincronización de hilos en grid\n");
+    printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
+    sumVec_v3<<<blocksPerGrid, threadsPerBlock>>>(d_A, numElements);
+    CUDA_CHECK_RETURN(cudaGetLastError());
+    // Copia el resultado en sumatotal
+    CUDA_CHECK_RETURN(cudaMemcpyFromSymbol(&sumatotal, d_suma, sizeof(float)));
+    printf("Suma = %f\n", sumatotal);
+    findMinMaxTimes();
+
+
     
     // Verificar que el resultado es correcto, en general se acumula mucho error en tipo float y en N grande puede ser mucho,
     // especialmente para valores sumados pequeños (pudiendo no ser conmutativa la suma, por eso se suman en dos órdenes diferentes)

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cuda_runtime.h>
 
-_global_ void incvec(float *a, int n) {
+__global__ void incvec(float *a, int n) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= n)
     {

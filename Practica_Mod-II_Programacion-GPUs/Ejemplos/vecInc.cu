@@ -5,7 +5,7 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * @file Ejemplo.cu
+ * @file vecInc.cu
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
  * @brief Incrementar los elementos de un vector
  * @version 0.1
@@ -21,8 +21,8 @@
 #include <string>
 
 // Función para obtener el id del SM
-__device__ int get_smid(void) {
-  int ret;
+__device__ uint get_smid(void) {
+  uint ret;
   asm("mov.u32 %0, %smid;" : "=r"(ret));
   return ret;
 }
@@ -43,9 +43,9 @@ __global__ void incVec(float *A, int n) {
 }
 
 int main() { 
-  cudaError_t err;      // código de error devuelto por las funciones CUDA 
+  cudaError_t err;        // código de error devuelto por las funciones CUDA 
   int N = 500000;         // número de elementos del vector
-  int blockSize = 512;  // cantidad de hilos por bloque, se puede cambiar a 512, 1024, ...
+  int blockSize = 512;    // cantidad de hilos por bloque, se puede cambiar a 512, 1024, ...
   int gridSize = (N + blockSize - 1) / blockSize;
   float *h_A = (float *)malloc(N * sizeof(float));    // h_A = host_A
   float *d_A;                                         // d_A = device_A                   
@@ -68,7 +68,7 @@ int main() {
 
   // Inicializar el vector en la CPU
   for (int i = 0; i < N; i++) {
-    h_A[i] = 1.0f;
+    h_A[i] = rand()/(float)RAND_MAX;
   }
 
   err = cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice); // Copiar el vector de la CPU a la GPU

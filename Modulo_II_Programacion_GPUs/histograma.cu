@@ -7,24 +7,6 @@
  * Curso: 4º
  * @file histograma.cu
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief 
- * @version 0.1
- * 
- * Compilar y ejecutar con: nvcc histograma.cu -o histograma
- *
- * @copyright Copyright (c) 2023
- *
- */
-
-/**
- *
- * Universidad de La Laguna
- * Escuela Superior de Ingeniería y Tecnología
- * Grado en Ingeniería Informática
- * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
- * Curso: 4º
- * @file histograma.cu
- * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
  * @brief Version 1 histograma en CUDA, crear tantos hilos como elementos de V
  * para que cada uno se encargue de ir al elemento que le corresponda en V e
  * incremente la caja correcta en el vector histograma H (posiblemente de forma

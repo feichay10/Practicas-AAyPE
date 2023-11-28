@@ -13,7 +13,7 @@
 
 #define N (200)
 #define M (300)
-#define I (100)
+#define I (500)
 #define BSIZE (32)
 
 static void CheckCudaErrorAux (const char *, unsigned, const char *, cudaError_t);
@@ -418,7 +418,7 @@ int main(void)
 
 
     // Launch the Matrix product CUDA Kernels
-    dim3 threadsPerBlock1(64,8);
+    dim3 threadsPerBlock1(32,32);
     dim3 blocksPerGrid1( (M + threadsPerBlock1.x - 1) / threadsPerBlock1.x , (N + threadsPerBlock1.y - 1) / threadsPerBlock1.y );
     printf("CUDA kernel 1 launch with (%d, %d) blocks of (%d, %d) threads\n", blocksPerGrid1.x, blocksPerGrid1.y, threadsPerBlock1.x, threadsPerBlock1.y);
     startTimer(&start, &stop);

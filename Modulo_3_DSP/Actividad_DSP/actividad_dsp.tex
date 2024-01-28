@@ -17,10 +17,10 @@
 \usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{subcaption}
-
+\usepackage{multicol}
 \usepackage{listings}
 \usepackage{xcolor}
-
+\usepackage{eurosym} % Paquete necesario
 \usepackage[spanish]{babel}
 
 \newcommand{\subtitle}[1]{
@@ -158,6 +158,8 @@
 
 % “Texto entre comillas dobles”
 
+% • 
+
 %==============================================================================
 
 \begin{document}
@@ -183,16 +185,96 @@
 
 % Secciones del informe
 % Capitulo 1
-\chapter{Capitulo 1}
+\chapter{Introducción a los DSP}
+Un procesador de señales digitales o DSP es un sistema basado en un procesador o
+microprocesador que posee un conjunto de instrucciones, un hardware y un software
+optimizado para aplicaciones que requieren operaciones numéricas a muy alta velocidad.
+
+Algunos fabricantes de DSP son:
+\begin{multicols}{2}
+  \begin{itemize}
+    \item Analog Devices
+    \item Texas Instruments
+    \item NXP
+    \item STMicroelectronics
+  \end{itemize}
+
+  \columnbreak
+
+  \begin{itemize}
+    \item Infineon
+    \item Qualcomm
+    \item Broadcom
+  \end{itemize}
+\end{multicols}
 
 % Capitulo 2
-\chapter{Capitulo 2}
-% 2.1
-\section{Seccion 2.1}
+\chapter{Automatización industrial}
+La automatización industrial es la aplicación de tecnologías para operar procesos
+y maquinaria sin la intervención humana. Se utiliza en una gran variedad de industrias,
+como la automotriz, la robótica, la aeroespacial, la naval, la de empaquetado, la de
+alimentos y bebidas, la de productos farmacéuticos y la de fabricación de metales.
+
+Algunas aplicaciones de la automatización industrial son: control de procesos, robots industriales y colaborativos,
+sistemas de transporte, monitoreo y control, sistemas de prueba, sistemas de seguridad, etc.
+
+\section{DSP en la automatización industrial}
+Los DSP (Procesadores Digitales de Señal) son dispositivos que realizan operaciones matemáticas
+sobre señales digitales, como audio, vídeo o datos. Se utilizan en muchos campos de la automatización
+industrial, como el control de procesos, la comunicación, el filtrado o la conversión de datos.
+
+Dentro de los fabricantes existen gran variedad de DSP en el sector de automatización y en concreto
+en la robótica, por lo que aqui se destaca los principales fabricantes y sus productos.
+
+\textbf{Texas Instruments:} TMS320C6678
+\begin{itemize}
+  \item Ocho Subsistemas de Núcleos DSP TMS320C66x:
+        \subitem Cada subsistema tiene un núcleo CPU C66x con frecuencias de 1.0 GHz, 1.25 GHz o 1.4 GHz.
+        \subitem Rendimiento de hasta 44.8 GMAC/Core para punto fijo a 1.4 GHz y 22.4 GFLOP/Core para punto flotante a 1.4 GHz.
+        \subitem Memoria por núcleo: 32K B para L1P, 32K B para L1D y 512K B para L2.
+
+  \item Controlador de Memoria Compartida Multinúcleo (MSMC):
+        \subitem 4096 KB de memoria SRAM compartida por los ocho núcleos DSP C66x.
+        \subitem Unidad de Protección de Memoria para la memoria SRAM MSM y DDR3\_EMIF.
+
+        \newpage
+
+  \item Navigator Multinúcleo:
+        \subitem 8192 colas de hardware multipropósito con administrador de colas.
+        \subitem DMA basado en paquetes para transferencias sin sobrecarga.
+
+  \item Coprocesador de Red:
+        \subitem Acelerador de paquetes para soporte de IPsec, GTP-U, SCTP, PDCP y más.
+        \subitem Acelerador de seguridad con soporte para IPSec, SRTP, AES, SHA-1, SHA-2 y más.
+        \subitem Acelerador de cifrado con velocidad de hasta 2.8 Gbps.
+
+  \item Periféricos:
+        \subitem Cuatro carriles de SRIO 2.1 con velocidades de hasta 5 GBaud por carril.
+        \subitem PCIe Gen2 con un puerto que admite 1 o 2 carriles.
+        \subitem HyperLink para conexiones con otros dispositivos de la arquitectura Keystone, con soporte de hasta 50 Gbaud.
+        \subitem Subsistema de interruptores Gigabit Ethernet (GbE) con dos puertos SGMII.
+        \subitem Interfaz DDR3 de 64 bits con espacio de memoria direccionable de 8 GB.
+        \subitem Puertos de serie de telecomunicaciones (TSIP), UART, I2C, SPI, y más.
+
+  \item Temperaturas de Operación:
+        \subitem Temperatura comercial: 0°C a 85°C.
+        \subitem Temperatura extendida: -40°C a 100°C.
+
+  \item Precio: 347,78\euro. 
+\end{itemize}
+
+\textbf{Qualcomm:} RB5
+
+\textbf{Analog Devices:} ADSP-SC589 
+
+\newpage
 
 \chapter{Bibliografía} % En formato APA
 \begin{enumerate}
-\item Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
+  \item Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
+  \item \url{https://odin.fi-b.unam.mx/labdsp/files/ADSP/apuntes/dsp_apli0_17.pdf}
+  \item \url{https://www.ti.com/lit/ds/symlink/tms320c6678.pdf?ts=1706410966216}
+  \item \url{https://www.mouser.es/c/semiconductors/embedded-processors-controllers/digital-signal-processors-controllers-dsp-dsc/?q=TMS320C6678&m=Texas%20Instruments&series=TMS320C6678}
 
 \end{enumerate}
 

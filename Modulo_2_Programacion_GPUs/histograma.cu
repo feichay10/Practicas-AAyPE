@@ -30,7 +30,7 @@
 #define N 500000000  // Numero de elementos en el vector V
 #define M 8          // Numero de cajas en el histograma
 
-#define REPETITIONS 10000  // Repeticion de pruevas para calculo de media, max y min
+#define REPETITIONS 20  // Repeticion de pruevas para calculo de media, max y min
 #define SCALA 50            // Datos calculados en cada hilo
 
 __device__ int vector_V[N];  // Vector de datos de entrada
@@ -95,42 +95,68 @@ __global__ void histogram(int threadsPerBlock, int blocksPerGrid) {
 }
 
 int main() {
-  int threadsPerBlock = 256;
-  int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+  // Valores para la inicializacion del vector de datos de entrada
   int random = time(NULL);
+  static curandState *states;
 
-  curandState *devStates;
-  CUDA_CHECK_RETURN(cudaMalloc(&devStates, threadsPerBlock * blocksPerGrid * sizeof(curandState)));
+  int h_vector_H[M];  // Vector del histograma en el host
+  int threadsPerBlock = 1024; // Hilos por bloque
+  int blocksPerGrid = ((N / SCALA) + threadsPerBlock - 1) / threadsPerBlock;
+  float t_duration[REPETITIONS]; // Vector para guardar los tiempos de ejecucion
 
-  kernel_init_vector<<<blocksPerGrid, threadsPerBlock>>>(random, devStates, threadsPerBlock, blocksPerGrid);
-  kernel_init_histogram<<<(M + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>();
-
-  cudaDeviceSynchronize();
-
-  double min_time = DBL_MAX;
-  double max_time = 0;
-  double mean_time = 0;
+  // Variables para el calculo de tiempo
+  cudaEvent_t start,stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
 
   for (int i = 0; i < REPETITIONS; i++) {
-    clock_t start = clock();
+    CUDA_CHECK_RETURN(cudaEventRecord(start, 0));
+
+    CUDA_CHECK_RETURN(cudaMalloc((void **)&states, blocksPerGrid * threadsPerBlock * sizeof(curandState)));
+    kernel_init_vector<<<blocksPerGrid, threadsPerBlock>>>(random, states, threadsPerBlock, blocksPerGrid);
+    CUDA_CHECK_RETURN(cudaGetLastError());
+    CUDA_CHECK_RETURN(cudaDeviceSynchronize());
+
+    kernel_init_histogram<<<1, M>>>();
+    CUDA_CHECK_RETURN(cudaGetLastError());
+    CUDA_CHECK_RETURN(cudaDeviceSynchronize());
+
     histogram<<<blocksPerGrid, threadsPerBlock>>>(threadsPerBlock, blocksPerGrid);
-    cudaDeviceSynchronize();
-    clock_t end = clock();
-    double time = (double)(end - start) / CLOCKS_PER_SEC;
-    mean_time += time;
-    if (time < min_time) {
-      min_time = time;
+
+    CUDA_CHECK_RETURN(cudaGetLastError());
+
+    CUDA_CHECK_RETURN(cudaMemcpyFromSymbol(h_vector_H, vector_H, M * sizeof(int)));
+    int acum = 0;
+
+    std::cout << "\nHistograma:" << std::endl;
+    for (int j = 0; j < M; j++) {
+      std::cout << "\tH[" << j << "]: " << h_vector_H[j] << std::endl;
+      acum += h_vector_H[i];
     }
-    if (time > max_time) {
-      max_time = time;
+    std::cout << "Total: " << acum << std::endl;
+
+    CUDA_CHECK_RETURN(cudaFree(states));
+    CUDA_CHECK_RETURN(cudaEventRecord(stop, 0));
+    CUDA_CHECK_RETURN(cudaEventSynchronize(stop));
+
+    CUDA_CHECK_RETURN(cudaEventElapsedTime(&t_duration[i], start, stop));
+  }
+  
+  float t_max = 0, t_min = FLT_MAX, mean = 0;
+  for (int i = 0; i < REPETITIONS; i++) {
+    mean += t_duration[i];
+    if (t_duration[i] > t_max) {
+      t_max = t_duration[i];
+    }
+    if (t_duration[i] < t_min) {
+      t_min = t_duration[i];
     }
   }
 
-  mean_time /= REPETITIONS;
-
-  std::cout << "Min time: " << min_time << std::endl;
-  std::cout << "Max time: " << max_time << std::endl;
-  std::cout << "Mean time: " << mean_time << std::endl;
+  std::cout << "\n\nSe han realizado " << REPETITIONS << " pruebas" << std::endl;
+  std::cout << "Obteniendo un tiempo medio de: " << mean / REPETITIONS << " ms" << std::endl;
+  std::cout << "Con un tiempo maximo de: " << t_max << " ms" << std::endl;
+  std::cout << "Con un tiempo minimo de: " << t_min << " ms" << std::endl;
 
   return 0;
 }

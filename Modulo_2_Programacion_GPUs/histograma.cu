@@ -197,9 +197,10 @@ int main() {
   }
 
   std::cout << "\nSe ha hecho " << REPETITIONS << " repeticiones" << std::endl;
-  std::cout << "Tiempo medio " << mean / REPETITIONS << " ms" << std::endl;
-  std::cout << "Tiempo maximo " << max << " ms" << std::endl;
-  std::cout << "Tiempo minimo " << min << " ms" << std::endl;
+  std::cout << "Tiempo medio:  " << mean / REPETITIONS << " ms" << std::endl;
+  std::cout << "Tiempo maximo: " << max << " ms" << std::endl;
+  std::cout << "Tiempo minimo: " << min << " ms" << std::endl;
+
 
   return 0;
 }

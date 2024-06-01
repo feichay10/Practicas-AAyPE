@@ -5,8 +5,8 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * @file histograma_1.cu
- * @brief Version 2 histograma en CUDA: Realizar un histograma de un vector V de
+ * @file histograma_2.cu
+ * @brief Version 1 histograma en CUDA: Realizar un histograma de un vector V de
  * un número elevado N de elementos enteros aleatorios. El histograma consiste 
  * en un vector H que tiene M elementos que representan "cajas". En cada caja se 
  * cuenta el número de veces que ha aparecido un elemento del vector V con el 
@@ -18,15 +18,20 @@
  * incrementar. Se sugiere como N un valor del orden de millones de elementos y 
  * como M, 8 cajas.
  * 
- * Ahora, para la segunda implementación, dividiremos la operación en dos fases. En
- * la primera, en lugar de trabajar sobre un único histograma global, repartiremos 
- * el cálculo realizando un cierto número de histogramas que llamaremos "locales", 
- * cada uno calculado sobre una parte del vector de datos. La idea es reducir el número
- * de hilos que escriben sobre la misma posición del histograma, ya que
- * dicha operación debe ser atómica y se serializan dichos accesos. La segunda fase
- * realizará la suma de los histogramas locales en un único histograma global final.
- * Se debe intentar llevar a cabo esta suma de la forma más paralela o eficiente,
- * posiblemente utilizando el método de reducción.
+ * Como implementación base (que podremos mejorar en tiempo o no) se pide crear 
+ * tantos hilos como elementos de V para que cada uno se encargue de ir
+ * al elemento que le corresponda en V e incremente la caja correcta en el
+ * vector histograma H (posiblemente de forma atómica).
+ * 
+ * 1. Trabajar sobre un único histograma global repartiendo el cálculo en histogramas "locales"
+ * cada uno calculado sobre una parte del vector de datos. Recudiendo el número de hilos que
+ * escriben sobre la misma posición del histograma, ya que dicha operación debe ser atómica y
+ * se serializan dichos accesos.
+ * 
+ * 2. Realizar la suma de los histogramas locales en un único histograma global final. Se debe
+ * intentar llevar a cabo esta suma de la forma más paralela o eficiente, posiblemente utilizando
+ * el método de reducción.
+ * 
  * 
  * @version 0.1
  *
@@ -44,21 +49,26 @@
 // Function to check the return value of the CUDA runtime API call and exit
 #define CUDA_CHECK_RETURN(value) CheckCudaErrorAux(__FILE__, __LINE__, #value, value)
 
-#define N 10000000          // Numero de elementos en el vector V
-#define M 8                 // Numero de elementos o cajas en el histograma (tamaño del histograma)
-#define REPETITIONS 20      // Numero de repeticiones para el calculo de la media, max y min
+#define N 10000000           // Numero de elementos en el vector V
+#define M 8                  // Numero de elementos o cajas en el histograma (tamaño del histograma)
+#define REPETITIONS 20       // Numero de repeticiones para el calculo de la media, max y min
 
 #define THREADS_PER_BLOCK 512
 #define BLOCKS_PER_GRID ((N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK)
 
 // Variables globales en el device
-__device__ int vector_V[N];           // Vector V (vector) de un numero elevado N de elementos enteros aleatorios
-__device__ int vector_H[M];           // Vector H (Histograma) que tiene M elementos que representan "cajas"
-__shared__ int partial_histogram[M];  // Vector parcial para el histograma
+__device__ int vector_V[N];  // Vector V (vector) de un numero elevado N de elementos enteros aleatorios
+__device__ int vector_H[M];  // Vector H (Histograma) que tiene M elementos que representan "cajas"
+
 
 /**
- * Check the return value of the CUDA runtime API call and exit
+ * @brief Check the return value of the CUDA runtime API call and exit 
  * the application if the call has failed.
+ *
+ * @param file 
+ * @param line 
+ * @param statement 
+ * @param err 
  */
 static void CheckCudaErrorAux (const char *file, unsigned line, const char *statement, cudaError_t err) {
   if (err == cudaSuccess) {
@@ -120,52 +130,37 @@ __global__ void initVectorV(int random, curandState *state) {
  * 
  */
 __global__ void initVectorH() {
-  
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < M) {
+    vector_H[i] = 0;
+  }
 }
 
 /**
  * @brief Kernel para el calculo del histograma por reducción
  * 
- * 1. Trabajar sobre un único histograma global repartiendo el cálculo en histogramas "locales"
- * cada uno calculado sobre una parte del vector de datos. Recudiendo el número de hilos que
- * escriben sobre la misma posición del histograma, ya que dicha operación debe ser atómica y
- * se serializan dichos accesos.
- * 
- * 
  */
 __global__ void histogram() {
-  // Primera parte:
+  // Declarar memoria compartida para el histograma local
+  extern __shared__ int local_histogram[];
+
+  // Inicializar el histograma local en memoria compartida
+  int tid = threadIdx.x;
+  for (int i = tid; i < M; i += blockDim.x) {
+    local_histogram[i] = 0;
+  }
+  __syncthreads();
+
   // Calcular el histograma local
-  int i = threadIdx.x + blockIdx.x * blockDim.x;
+  int i = blockIdx.x * blockDim.x + tid;
   if (i < N) {
-    atomicAdd(&partial_histogram[vector_V[i] % M], 1);
+    atomicAdd(&local_histogram[vector_V[i] % M], 1);
   }
+  __syncthreads();
 
-}
-
-/**
- * @brief Kernel para la reducción de los histogramas locales en un único histograma global final
- * 
- *  * 2. Realizar la suma de los histogramas locales en un único histograma global final. Se debe
- * intentar llevar a cabo esta suma de la forma más paralela o eficiente, posiblemente utilizando
- * el método de reducción.
- * 
- */
-__global__ void reduction() {
-  // Segunda parte:
   // Realizar la reducción de los histogramas locales en un único histograma global final
-  int i = threadIdx.x;
-  int stride = 1; 
-  while (stride < M) {
-    if (i % (2 * stride) == 0) {
-      partial_histogram[i] += partial_histogram[i + stride];
-    }
-    __syncthreads();
-    stride *= 2;
-  }
-
-  if (i == 0) {
-    atomicAdd(&vector_H[0], partial_histogram[0]);
+  for (int j = tid; j < M; j += blockDim.x) {
+    atomicAdd(&vector_H[j], local_histogram[j]);
   }
 }
 
@@ -184,7 +179,6 @@ int main() {
 
   std::cout << "Numero de elementos en el vector V: " << N << std::endl;
   std::cout << "Numero de elementos o cajas en el histograma: " << M << std::endl;
-
   for (int i = 0; i < REPETITIONS; i++) {
     // Inicializar el vector V
     initVectorV<<<BLOCKS_PER_GRID, THREADS_PER_BLOCK>>>(random, devStates);
@@ -199,11 +193,7 @@ int main() {
     startTimer(&start, &stop);
 
     // Calcular el histograma
-    histogram<<<BLOCKS_PER_GRID, THREADS_PER_BLOCK>>>();
-    CUDA_CHECK_RETURN(cudaDeviceSynchronize());
-
-    // Realizar la reducción de los histogramas locales en un único histograma global final
-    reduction<<<1, M>>>();
+    histogram<<<BLOCKS_PER_GRID, THREADS_PER_BLOCK, M * sizeof(int)>>>();
     CUDA_CHECK_RETURN(cudaDeviceSynchronize());
 
     // Detener el temporizador y almacenar el tiempo

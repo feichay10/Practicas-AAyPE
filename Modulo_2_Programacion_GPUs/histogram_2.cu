@@ -111,27 +111,6 @@ float stopAndPrintTimer(cudaEvent_t *start, cudaEvent_t *stop) {
   return milliseconds;
 }
 
-/**
- * @brief Save the elapsed time in a file
- * 
- * @param elapsedTime 
- * @param repetitions 
- */
-void saveTimes(float *elapsedTime, int repetitions) {
-  FILE *file = fopen("times_2.txt", "w");
-  if (file == NULL) {
-    std::cerr << "Error al abrir el archivo" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-
-  fprintf(file, "%d\n", N); // Guardar el numero de elementos en el vector V
-  for (int i = 0; i < repetitions; i++) {
-    fprintf(file, "%f\n", elapsedTime[i]);
-  }
-
-  fclose(file);
-}
-
 // ====================================================================================================
 
 /**
@@ -248,7 +227,6 @@ int main() {
     if (elapsedTime[i] < min) {
       min = elapsedTime[i];
     }
-    saveTimes(elapsedTime, REPETITIONS);
   }
 
   std::cout << "\nSe ha hecho " << REPETITIONS << " repeticiones" << std::endl;

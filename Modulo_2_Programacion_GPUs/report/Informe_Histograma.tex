@@ -235,24 +235,21 @@ en el archivo \textit{histogram\_2.cu}.
 El código es el siguiente:
 \begin{lstlisting}
   __global__ void histogram() {
-  // Declarar memoria compartida para el histograma local
+
   extern __shared__ int local_histogram[];
 
-  // Inicializar el histograma local en memoria compartida
   int tid = threadIdx.x;
   for (int i = tid; i < M; i += blockDim.x) {
     local_histogram[i] = 0;
   }
   __syncthreads();
 
-  // Calcular el histograma local
   int i = blockIdx.x * blockDim.x + tid;
   if (i < N) {
     atomicAdd(&local_histogram[vector_V[i] % M], 1);
   }
   __syncthreads();
 
-  // Realizar la reduccion de los histogramas locales en un unico histograma global final
   for (int j = tid; j < M; j += blockDim.x) {
     atomicAdd(&vector_H[j], local_histogram[j]);
   }
@@ -266,7 +263,9 @@ La segunda implementación se divide en dos fases.
 \chapter{Pruebas realizadas}
 Durante las pruebas realizadas, se he ejecutado cada implementación 10000 veces para 
 obtener un tiempo promedio significativo de tiempo. También, se ha obtenido el tiempo
-máximo y mínimo de la ejecución. Además, se 
+máximo y mínimo de la ejecución. 
+
+\section{Tiempo promedio de ejecución}
 
 
 \chapter{Bibliografía} % En formato APA

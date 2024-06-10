@@ -51,7 +51,7 @@
 
 #define N 10000000           // Numero de elementos en el vector V
 #define M 8                  // Numero de elementos o cajas en el histograma (tamaño del histograma)
-#define REPETITIONS 1000       // Numero de repeticiones para el calculo de la media, max y min
+#define REPETITIONS 20       // Numero de repeticiones para el calculo de la media, max y min
 
 #define THREADS_PER_BLOCK 512
 #define BLOCKS_PER_GRID ((N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK)
@@ -109,6 +109,27 @@ float stopAndPrintTimer(cudaEvent_t *start, cudaEvent_t *stop) {
   CUDA_CHECK_RETURN(cudaEventDestroy(*stop));
 
   return milliseconds;
+}
+
+/**
+ * @brief Save the elapsed time in a file
+ * 
+ * @param elapsedTime 
+ * @param repetitions 
+ */
+void saveTimes(float *elapsedTime, int repetitions) {
+  FILE *file = fopen("times_2.txt", "w");
+  if (file == NULL) {
+    std::cerr << "Error al abrir el archivo" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  fprintf(file, "%d\n", N); // Guardar el numero de elementos en el vector V
+  for (int i = 0; i < repetitions; i++) {
+    fprintf(file, "%f\n", elapsedTime[i]);
+  }
+
+  fclose(file);
 }
 
 // ====================================================================================================
@@ -216,9 +237,9 @@ int main() {
   CUDA_CHECK_RETURN(cudaFree(devStates));
 
   // Calcular la media, maximo y minimo de los tiempos de ejecución
-  float max = 0;
-  float min = FLT_MAX;
   float mean = 0;
+  float max = FLT_MIN;
+  float min = FLT_MAX;
   for (int i = 0; i < REPETITIONS; i++) {
     mean += elapsedTime[i];
     if (elapsedTime[i] > max) {
@@ -227,6 +248,7 @@ int main() {
     if (elapsedTime[i] < min) {
       min = elapsedTime[i];
     }
+    saveTimes(elapsedTime, REPETITIONS);
   }
 
   std::cout << "\nSe ha hecho " << REPETITIONS << " repeticiones" << std::endl;

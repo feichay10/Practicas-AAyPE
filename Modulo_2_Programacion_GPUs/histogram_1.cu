@@ -95,16 +95,19 @@ float stopAndPrintTimer(cudaEvent_t *start, cudaEvent_t *stop) {
 }
 
 /**
- * Funcion para guardar los tiempos de ejecución en un archivo
+ * @brief Save the elapsed time in a file
  * 
+ * @param elapsedTime 
+ * @param repetitions 
  */
 void saveTimes(float *elapsedTime, int repetitions) {
-  FILE *file = fopen("times.txt", "w");
+  FILE *file = fopen("times_1.txt", "w");
   if (file == NULL) {
     std::cerr << "Error al abrir el archivo" << std::endl;
     exit(EXIT_FAILURE);
   }
 
+  fprintf(file, "%d\n", N);
   for (int i = 0; i < repetitions; i++) {
     fprintf(file, "%f\n", elapsedTime[i]);
   }
@@ -201,18 +204,18 @@ int main() {
   CUDA_CHECK_RETURN(cudaFree(devStates));
 
   // Calcular la media, maximo y minimo de los tiempos de ejecución
-  float max = 0;
-  float min = FLT_MAX;
   float mean = 0;
+  float max = FLT_MIN;
+  float min = FLT_MAX;
   for (int i = 0; i < REPETITIONS; i++) {
     mean += elapsedTime[i];
-    saveTimes(elapsedTime, REPETITIONS);
     if (elapsedTime[i] > max) {
       max = elapsedTime[i];
     }
     if (elapsedTime[i] < min) {
       min = elapsedTime[i];
     }
+    saveTimes(elapsedTime, REPETITIONS);
   }
 
   std::cout << "\nSe ha hecho " << REPETITIONS << " repeticiones" << std::endl;

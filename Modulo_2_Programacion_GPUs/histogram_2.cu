@@ -51,7 +51,7 @@
 
 #define N 10000000           // Numero de elementos en el vector V
 #define M 8                  // Numero de elementos o cajas en el histograma (tamaño del histograma)
-#define REPETITIONS 1000       // Numero de repeticiones para el calculo de la media, max y min
+#define REPETITIONS 20       // Numero de repeticiones para el calculo de la media, max y min
 
 #define THREADS_PER_BLOCK 512
 #define BLOCKS_PER_GRID ((N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK)
@@ -216,9 +216,9 @@ int main() {
   CUDA_CHECK_RETURN(cudaFree(devStates));
 
   // Calcular la media, maximo y minimo de los tiempos de ejecución
-  float max = 0;
-  float min = FLT_MAX;
   float mean = 0;
+  float max = FLT_MIN;
+  float min = FLT_MAX;
   for (int i = 0; i < REPETITIONS; i++) {
     mean += elapsedTime[i];
     if (elapsedTime[i] > max) {

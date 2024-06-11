@@ -49,9 +49,9 @@
 // Function to check the return value of the CUDA runtime API call and exit
 #define CUDA_CHECK_RETURN(value) CheckCudaErrorAux(__FILE__, __LINE__, #value, value)
 
-#define N 10000000           // Numero de elementos en el vector V
-#define M 8                  // Numero de elementos o cajas en el histograma (tamaño del histograma)
-#define REPETITIONS 20       // Numero de repeticiones para el calculo de la media, max y min
+#define N 8000000           // Numero de elementos en el vector V
+#define M 8                 // Numero de elementos o cajas en el histograma (tamaño del histograma)
+#define REPETITIONS 10000      // Numero de repeticiones para el calculo de la media, max y min
 
 #define THREADS_PER_BLOCK 512
 #define BLOCKS_PER_GRID ((N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK)
@@ -229,6 +229,8 @@ int main() {
     }
   }
 
+  std::cout << "\n\n==================== RESULTADOS Histograma 2 ====================\n";
+  std::cout << "Numero de elementos en el vector V: " << N << std::endl;
   std::cout << "\nSe ha hecho " << REPETITIONS << " repeticiones" << std::endl;
   std::cout << "Tiempo medio:  " << mean / REPETITIONS << " ms" << std::endl;
   std::cout << "Tiempo maximo: " << max << " ms" << std::endl;

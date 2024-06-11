@@ -187,23 +187,23 @@
 % Secciones del informe
 % Capitulo 1
 \chapter{Introducción}
-Consiste realizar un histograma de un vector V de un número elevado N de 
-elementos enteros aleatorios. El histograma consiste en un vector H que tiene M 
+Consiste en realizar un histograma de un vector V, de un número elevado de N
+elementos enteros aleatorios. El histograma consiste en un vector H, que tiene M 
 elementos que representan “cajas”. En cada caja se cuenta el número de veces que
-ha aparecido un elemento del vector V con el valor adecuado para asignarlo a esa 
+ha aparecido un elemento del vector V, con el valor adecuado para asignarlo a esa 
 caja (normalmente cada caja representa un rango o intervalo de valores). En nuestro 
 caso, para simplificar la asignación del elemento de V a su caja correspondiente 
 del histograma, vamos a realizar la operación ValorElementoV Módulo M, que nos da 
-directamente el índice de la caja del histograma a la que pertenecerá ese elemento
+directamente el índice de la caja del histograma a la que pertenecerá ese elemento,
 y cuyo contenido deberemos incrementar. Se sugiere como N un valor del orden de 
-millones de elementos y como M, 8 cajas. 
+millones de elementos y como M 8 cajas. 
 
 % Capitulo 2
 \chapter{Desarrollo del proyecto}
 \section{Implementación base}
-Como implementación base se pide crear tantos hilos como elementos V para cada uno
-se encargue de ir al elemento que le corresponda V e incremente la caja correcta en
-el vector histograma H (posiblemente de forma atómica).
+Como implementación base, se pide crear tantos hilos como elementos V para que cada uno
+se encargue de ir al elemento que le corresponda a V, e incremente así la caja correcta en
+en el vector histograma H, de forma atómica.
 
 El código base es el siguiente:
 \begin{lstlisting}
@@ -217,19 +217,17 @@ __global__ void histogram() {
 
 La implementación base lo que hace es crear un único histogram compartido por todos
 los hilos. Cada hilo se encarga de incrementar la caja correspondiente al elemento
-V que le corresponda. Para ello, se utiliza la función atomicAdd para incrementar
+V que le corresponda. Para ello, se utiliza la función atomicAdd, para incrementar
 de forma atómica el valor de la caja correspondiente al elemento V. La implementación
 se encuentra en el archivo \textit{histogram\_1.cu}.
 
 \section{Segunda implementación}
-Como segunda implementación, se va a dividir la operación en dos fases. En la primera,
-en lugar de trabajar sobre un único histograma global, repartiremos el cálculo realizando 
-un cierto número de histogramas que llamaremos "locales", cada uno calculado sobre una 
-parte del vector de datos. La idea es reducir el número de hilos que escriben sobre la
-misma posición del histograma, ya que dicha operación debe ser atómica y se serializan 
-dichos accesos. La segunda fase realizará la suma de los histogramas locales en un único
-histograma global final. Se debe intentar llevar a cabo esta suma de la forma más paralela
-o eficiente, posiblemente utilizando el método de reducción. La implementación se encuentra
+Como segunda implementación, se va a dividir el cálculo del histograma en dos fases.
+En la primera fase, se va a usar un array en memoria compartida local que se usará para
+almacenar los histogramas calculados por cada hilo. Tras esto, cada hilo inicializa una parte 
+del histograma local a 0. Por último, cada hilo procesa un elemento del vector V, incrementando
+el contador correspondiente en el histograma local. En la segunda fase, se realiza la suma de
+los histogramas locales en un único histograma global final. La implementación se encuentra
 en el archivo \textit{histogram\_2.cu}.
 
 El código es el siguiente:
@@ -256,13 +254,10 @@ El código es el siguiente:
 }
 \end{lstlisting}
 
-La segunda implementación se divide en dos fases. 
-
-
 % Capitulo 3
 \chapter{Pruebas realizadas}
 Durante las pruebas realizadas, se he ejecutado cada implementación 10000 veces para 
-obtener un tiempo promedio significativo de tiempo. También, se ha obtenido el tiempo
+obtener un tiempo promedio significativo de tiempo. De igual forma, se ha obtenido el tiempo
 máximo y mínimo de la ejecución. 
 
 \section{Tiempos promedio de ejecución}
@@ -336,5 +331,19 @@ máximo y mínimo de la ejecución.
   \caption{Tiempo mínimo de ejecución}
   \label{tab:tiempo mínimo de ejecución}
 \end{table}
+
+% Capitulo 4
+\chapter{Conclusiones}
+En conclusión, la segunda implementación es más eficiente, en comparación con la primera implementación,
+debido a que se divide en dos fases. En la primera de ellas, se calcula un histograma local para
+cada hilo. Mientras que en la segunda, se realiza la suma de los histogramas locales en un único
+histograma global final. Por consecuencia, la primera implementación es menos eficiente, debido a que se utiliza
+un único histograma compartido por todos los hilos. 
+
+Además, se ha podido observar que el tiempo de ejecución de la primera implementación es mayor
+que el tiempo de ejecución de la segunda. Donde en la primera, el
+tiempo de ejecución aumenta de forma exponencial a medida que el tamaño de datos aumenta.
+En comparación con la segunda implementación, donde el tiempo de ejecución aumenta de forma lineal a medida que
+el tamaño de datos aumenta.
 
 \end{document}

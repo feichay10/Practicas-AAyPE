@@ -154,7 +154,7 @@ __global__ void initVectorH() {
 }
 
 /**
- * @brief Kernel para el calculo del histograma por reducción
+ * @brief Kernel para el calculo del histograma
  * 
  */
 __global__ void histogram() {

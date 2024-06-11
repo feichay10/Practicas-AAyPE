@@ -2,13 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-# Datos en formato de diccionario (convertidos a milisegundos)
-data = {
-    "Tamaño datos": [1000, 10000, 1000000, 2000000, 4000000, 8000000],
-    "Tiempo Algoritmo 1 (ms)": [0.00646111 * 1000, 0.00833236 * 1000, 1.12617 * 1000, 0.831302 * 1000, 2.78837 * 1000, 4.11432 * 1000],
-    "Tiempo Algoritmo 2 (ms)": [0.00651937 * 1000, 0.00693854 * 1000, 0.560478 * 1000, 0.0724803 * 1000, 1.83968 * 1000, 2.33973 * 1000]
-}
-
 def leer_datos_archivo(archivo):
     # Inicializar listas para almacenar los datos
     tamanios_datos = []

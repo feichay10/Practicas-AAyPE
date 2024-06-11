@@ -48,6 +48,9 @@ def create_plot(data):
     plt.grid(True)
     plt.yscale('log')  # Escala logarítmica en el eje y para mejor visualización
 
+    # Ajustar los ticks del eje Y a los valores del diccionario "Tamaño datos"
+    plt.yticks(ticks=data["Tamaño datos"], labels=data["Tamaño datos"])
+
     # Ajustar los ticks del eje X a intervalos de 0.2 ms dentro del rango de los datos
     max_time = max(max(df["Tiempo Codigo 1 (ms)"]), max(df["Tiempo Codigo 2 (ms)"]))
     plt.xticks(ticks=[i for i in range(0, int(max_time) + 1, 70)], labels=[f"{i/1000:.2f}" for i in range(0, int(max_time) + 1, 70)])

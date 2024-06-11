@@ -119,8 +119,7 @@ void timesOnFile(float max, float min, float mean) {
   
   if (archivo.is_open()) {
       archivo << N << ";" << mean << ";" << max << ";" << min << std::endl;
-      
-      // Cierra el archivo
+
       archivo.close();
       std::cout << "Contenido añadido al archivo correctamente." << std::endl;
   } else {

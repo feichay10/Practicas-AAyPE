@@ -58,38 +58,6 @@ def create_plot(data):
     # Mostrar la gráfica
     plt.show()
 
-
-import argparse
-
-def leer_datos_archivo(archivo):
-    # Inicializar listas para almacenar los datos
-    tamanios_datos = []
-    tiempos_codigo_1 = []
-    tiempos_codigo_2 = []
-
-    # Leer el archivo línea por línea
-    with open(archivo, 'r') as f:
-        for linea in f:
-            # Separar los valores de cada línea
-            valores = linea.strip().split(';')
-            tamanio = int(valores[0])
-            tiempo1 = float(valores[1]) * 1000  # Convertir a milisegundos
-            tiempo2 = float(valores[2]) * 1000  # Convertir a milisegundos
-
-            # Añadir los valores a las listas
-            tamanios_datos.append(tamanio)
-            tiempos_codigo_1.append(tiempo1)
-            tiempos_codigo_2.append(tiempo2)
-
-    # Crear el diccionario con los datos
-    data = {
-        "Tamaño datos": tamanios_datos,
-        "Tiempo Codigo 1 (ms)": tiempos_codigo_1,
-        "Tiempo Codigo 2 (ms)": tiempos_codigo_2
-    }
-
-    return data
-
 def main():
     # Crear el parser de argumentos
     parser = argparse.ArgumentParser(description='Leer datos de un archivo y procesarlos.')

@@ -25,8 +25,8 @@ def leer_datos_archivo(archivo):
     # Crear el diccionario con los datos
     data = {
         "Tamaño datos": tamanios_datos,
-        "Tiempo Algoritmo 1 (ms)": tiempos_codigo_1,
-        "Tiempo Algoritmo 2 (ms)": tiempos_codigo_2
+        "Tiempo Codigo 1 (ms)": tiempos_codigo_1,
+        "Tiempo Codigo 2 (ms)": tiempos_codigo_2
     }
 
     return data
@@ -37,11 +37,11 @@ def create_plot(data):
 
     # Generar la gráfica
     plt.figure(figsize=(10, 6))
-    plt.plot(df["Tiempo Algoritmo 1 (ms)"], df["Tamaño datos"], label="Algoritmo 1", marker='o', color='blue')
-    plt.plot(df["Tiempo Algoritmo 2 (ms)"], df["Tamaño datos"], label="Algoritmo 2", marker='o', color='red')
+    plt.plot(df["Tiempo Codigo 1 (ms)"], df["Tamaño datos"], label="Codigo 1", marker='o', color='blue')
+    plt.plot(df["Tiempo Codigo 2 (ms)"], df["Tamaño datos"], label="Codigo 2", marker='o', color='red')
 
     # Añadir títulos y etiquetas
-    plt.title("Comparación de Tiempos de Ejecución de Algoritmos")
+    plt.title("Comparación de Tiempos de Ejecución de Codigos")
     plt.xlabel("Tiempo de Ejecución (milisegundos)")
     plt.ylabel("Tamaño de Datos")
     plt.legend()
@@ -49,8 +49,8 @@ def create_plot(data):
     plt.yscale('log')  # Escala logarítmica en el eje y para mejor visualización
 
     # Ajustar los ticks del eje X a intervalos de 0.2 ms dentro del rango de los datos
-    max_time = max(max(df["Tiempo Algoritmo 1 (ms)"]), max(df["Tiempo Algoritmo 2 (ms)"]))
-    plt.xticks(ticks=[i for i in range(0, int(max_time) + 1, 200)], labels=[f"{i/1000:.1f}" for i in range(0, int(max_time) + 1, 200)])
+    max_time = max(max(df["Tiempo Codigo 1 (ms)"]), max(df["Tiempo Codigo 2 (ms)"]))
+    plt.xticks(ticks=[i for i in range(0, int(max_time) + 1, 70)], labels=[f"{i/1000:.2f}" for i in range(0, int(max_time) + 1, 70)])
 
     # Mostrar la gráfica
     plt.show()
@@ -81,8 +81,8 @@ def leer_datos_archivo(archivo):
     # Crear el diccionario con los datos
     data = {
         "Tamaño datos": tamanios_datos,
-        "Tiempo Algoritmo 1 (ms)": tiempos_codigo_1,
-        "Tiempo Algoritmo 2 (ms)": tiempos_codigo_2
+        "Tiempo Codigo 1 (ms)": tiempos_codigo_1,
+        "Tiempo Codigo 2 (ms)": tiempos_codigo_2
     }
 
     return data

@@ -265,13 +265,76 @@ Durante las pruebas realizadas, se he ejecutado cada implementación 10000 veces
 obtener un tiempo promedio significativo de tiempo. También, se ha obtenido el tiempo
 máximo y mínimo de la ejecución. 
 
-\section{Tiempo promedio de ejecución}
+\section{Tiempos promedio de ejecución}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.35]{img/mean_times.png}
+  \caption{Tiempo promedio de ejecución}
+  \label{fig:tiempo promedio de ejecución}
+\end{figure}
 
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Tamaño de datos} & \textbf{Tiempo Código 1} & \textbf{Tiempo Código 2} \\ \hline
+    1000 & 0.00642909 & 0.00644173 \\ \hline
+    10000 & 0.00865969 & 0.00644241 \\ \hline
+    1000000 & 0.227177 & 0.0126207 \\ \hline
+    2000000 & 0.458186 & 0.0201534 \\ \hline
+    4000000 & 0.922377 & 0.0322431 \\ \hline
+    8000000 & 1.86746 & 0.0543328 \\ \hline
+  \end{tabular}
+  \caption{Tiempo promedio de ejecución}
+  \label{tab:tiempo promedio de ejecución}
+\end{table}
 
-\chapter{Bibliografía} % En formato APA
-\begin{enumerate}
-\item Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
+\section{Tiempos máximo de ejecución}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.35]{img/max_times.png}
+  \caption{Tiempo máximo de ejecución}
+  \label{fig:tiempo máximo de ejecución}
+\end{figure}
 
-\end{enumerate}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Tamaño de datos} & \textbf{Tiempo Código 1} & \textbf{Tiempo Código 2} \\ \hline
+    1000 & 0.034912 & 0.017408 \\ \hline
+    10000 & 0.024576 & 0.02048 \\ \hline
+    1000000 & 0.257024 & 0.024576 \\ \hline
+    2000000 & 0.4864 & 0.029664 \\ \hline
+    4000000 & 0.96768 & 0.050176 \\ \hline
+    8000000 & 1.92614 & 0.076736 \\ \hline
+  \end{tabular}
+  \caption{Tiempo máximo de ejecución}
+  \label{tab:tiempo máximo de ejecución}
+\end{table}
+
+\section{Tiempos mínimo de ejecución}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.35]{img/min_times.png}
+  \caption{Tiempo mínimo de ejecución}
+  \label{fig:tiempo mínimo de ejecución}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Tamaño de datos} & \textbf{Tiempo Código 1} & \textbf{Tiempo Código 2} \\ \hline
+    1000 & 0.00512 & 0.00528 \\ \hline
+    10000 & 0.007168 & 0.005152 \\ \hline
+    1000000 & 0.22016 & 0.011264 \\ \hline
+    2000000 & 0.441344 & 0.019424 \\ \hline
+    4000000 & 0.892928 & 0.03072 \\ \hline
+    8000000 & 1.77869 & 0.052224 \\ \hline
+  \end{tabular}
+  \caption{Tiempo mínimo de ejecución}
+  \label{tab:tiempo mínimo de ejecución}
+\end{table}
 
 \end{document}

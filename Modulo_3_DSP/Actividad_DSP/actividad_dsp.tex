@@ -192,20 +192,20 @@ optimizado para aplicaciones que requieren operaciones numéricas a muy alta vel
 
 Algunos fabricantes de DSP son:
 \begin{multicols}{2}
-  \begin{itemize}
-    \item Analog Devices
-    \item Texas Instruments
-    \item NXP
-    \item STMicroelectronics
-  \end{itemize}
+      \begin{itemize}
+            \item Analog Devices
+            \item Texas Instruments
+            \item NXP
+            \item STMicroelectronics
+      \end{itemize}
 
-  \columnbreak
+      \columnbreak
 
-  \begin{itemize}
-    \item Infineon
-    \item Qualcomm
-    \item Broadcom
-  \end{itemize}
+      \begin{itemize}
+            \item Infineon
+            \item Qualcomm
+            \item Broadcom
+      \end{itemize}
 \end{multicols}
 
 % Capitulo 2
@@ -228,92 +228,122 @@ en la robótica, por lo que aqui se destaca los principales fabricantes y alguno
 
 \textbf{Texas Instruments:} TMS320C6678
 \begin{itemize}
-  \item Ocho Subsistemas de Núcleos DSP TMS320C66x:
-        \subitem Cada subsistema tiene un núcleo CPU C66x con frecuencias de 1.0 GHz, 1.25 GHz o 1.4 GHz.
-        \subitem Rendimiento de hasta 44.8 GMAC/Core para punto fijo a 1.4 GHz y 22.4 GFLOP/Core para punto flotante a 1.4 GHz.
-        \subitem Memoria por núcleo: 32K B para L1P, 32K B para L1D y 512K B para L2.
+      \item Ocho Subsistemas de Núcleos DSP TMS320C66x:
+            \subitem Cada subsistema tiene un núcleo CPU C66x con frecuencias de 1.0 GHz, 1.25 GHz o 1.4 GHz.
+            \subitem Rendimiento de hasta 44.8 GMAC/Core para punto fijo a 1.4 GHz y 22.4 GFLOP/Core para punto flotante a 1.4 GHz.
+            \subitem Memoria por núcleo: 32K B para L1P, 32K B para L1D y 512K B para L2.
 
-  \item Controlador de Memoria Compartida Multinúcleo (MSMC):
-        \subitem 4096 KB de memoria SRAM compartida por los ocho núcleos DSP C66x.
-        \subitem Unidad de Protección de Memoria para la memoria SRAM MSM y DDR3\_EMIF.
+      \item Controlador de Memoria Compartida Multinúcleo (MSMC):
+            \subitem 4096 KB de memoria SRAM compartida por los ocho núcleos DSP C66x.
+            \subitem Unidad de Protección de Memoria para la memoria SRAM MSM y DDR3\_EMIF.
 
-        \newpage
+            \newpage
 
-  \item Navigator Multinúcleo:
-        \subitem 8192 colas de hardware multipropósito con administrador de colas.
-        \subitem DMA basado en paquetes para transferencias sin sobrecarga.
+      \item Navigator Multinúcleo:
+            \subitem 8192 colas de hardware multipropósito con administrador de colas.
+            \subitem DMA basado en paquetes para transferencias sin sobrecarga.
 
-  \item Coprocesador de Red:
-        \subitem Acelerador de paquetes para soporte de IPsec, GTP-U, SCTP, PDCP y más.
-        \subitem Acelerador de seguridad con soporte para IPSec, SRTP, AES, SHA-1, SHA-2 y más.
-        \subitem Acelerador de cifrado con velocidad de hasta 2.8 Gbps.
+      \item Coprocesador de Red:
+            \subitem Acelerador de paquetes para soporte de IPsec, GTP-U, SCTP, PDCP y más.
+            \subitem Acelerador de seguridad con soporte para IPSec, SRTP, AES, SHA-1, SHA-2 y más.
+            \subitem Acelerador de cifrado con velocidad de hasta 2.8 Gbps.
 
-  \item Periféricos:
-        \subitem Cuatro carriles de SRIO 2.1 con velocidades de hasta 5 GBaud por carril.
-        \subitem PCIe Gen2 con un puerto que admite 1 o 2 carriles.
-        \subitem HyperLink para conexiones con otros dispositivos de la arquitectura Keystone, con soporte de hasta 50 Gbaud.
-        \subitem Subsistema de interruptores Gigabit Ethernet (GbE) con dos puertos SGMII.
-        \subitem Interfaz DDR3 de 64 bits con espacio de memoria direccionable de 8 GB.
-        \subitem Puertos de serie de telecomunicaciones (TSIP), UART, I2C, SPI, y más.
+      \item Periféricos:
+            \subitem Cuatro carriles de SRIO 2.1 con velocidades de hasta 5 GBaud por carril.
+            \subitem PCIe Gen2 con un puerto que admite 1 o 2 carriles.
+            \subitem HyperLink para conexiones con otros dispositivos de la arquitectura Keystone, con soporte de hasta 50 Gbaud.
+            \subitem Subsistema de interruptores Gigabit Ethernet (GbE) con dos puertos SGMII.
+            \subitem Interfaz DDR3 de 64 bits con espacio de memoria direccionable de 8 GB.
+            \subitem Puertos de serie de telecomunicaciones (TSIP), UART, I2C, SPI, y más.
 
-  \item Temperaturas de Operación:
-        \subitem Temperatura comercial: 0°C a 85°C.
-        \subitem Temperatura extendida: -40°C a 100°C.
+      \item Temperaturas de Operación:
+            \subitem Temperatura comercial: 0°C a 85°C.
+            \subitem Temperatura extendida: -40°C a 100°C.
 
-  \item Precio aproximado: 347,78\euro.
+      \item Precio aproximado: 347,78\euro.
 \end{itemize}
 
 \textbf{Qualcomm:} QRB5165
 \begin{itemize}
-  \item CPU Kryo 585 de 64 bits.
-        \subitem 4 núcleos Kyro Gold de alto rendimiento con caché L3 de 4MB
-        \subsubitem Tres núcleos Kyro Gold con cache L2 de 256 KB por núcleo a una Fmax de 2.42 GHz.
-        \subsubitem Un núcleo principal Kyro Gold con caché L2 de 512 KB, a una Fmax de 2.842 GHz.
-        \subitem 4 núcleos Kyro Silver de bajo consumo con caché L2 de 128 KB por núcleo a una Fmax de 1.805 GHz.
-  \item DSP Hexagon 698.
-        \subitem Hexagon Vector eXtensions (quad-HVX) 
-        \subitem Hexagon Coprocessor (Hexagon CP) 2.0
+      \item CPU Kryo 585 de 64 bits.
+            \subitem 4 núcleos Kyro Gold de alto rendimiento con caché L3 de 4MB
+            \subsubitem Tres núcleos Kyro Gold con cache L2 de 256 KB por núcleo a una Fmax de 2.42 GHz.
+            \subsubitem Un núcleo principal Kyro Gold con caché L2 de 512 KB, a una Fmax de 2.842 GHz.
+            \subitem 4 núcleos Kyro Silver de bajo consumo con caché L2 de 128 KB por núcleo a una Fmax de 1.805 GHz.
+      \item DSP Hexagon 698.
+            \subitem Hexagon Vector eXtensions (quad-HVX)
+            \subitem Hexagon Coprocessor (Hexagon CP) 2.0
 
-  \item GPU Adreno 650.
-        \subitem Frecuencia máxima de 587 MHz.
-        \subitem Soporte para OpenGL ES 3.2, Vulkan 1.1, DX12 y OpenCL 2.0 full profile.
+      \item GPU Adreno 650.
+            \subitem Frecuencia máxima de 587 MHz.
+            \subitem Soporte para OpenGL ES 3.2, Vulkan 1.1, DX12 y OpenCL 2.0 full profile.
 
-  \item Qualcomm 480 ISP.
-        \subitem Soporte hasta 12 cámaras mediante D-PHY
-        \subitem Soporte hasta 18 cámaras mediante C-PHY
-        \subitem Resolución de entrada del sensor en tiempo real: 25 + 25 + 2 + 2 + 2 + 2 + 2
-  
-  \item Soporte de memoria:
-        \subitem Cuatro canales de memoria de alta velocidad PoP LPDDR5 SDRAM (4 x 16-bit) diseñados para velocidades de hasta 2750 MHz de reloj y sistema de caché.
-        \subitem Soporte para memoria integrada UFS 3.1 gear 4.
+      \item Qualcomm 480 ISP.
+            \subitem Soporte hasta 12 cámaras mediante D-PHY
+            \subitem Soporte hasta 18 cámaras mediante C-PHY
+            \subitem Resolución de entrada del sensor en tiempo real: 25 + 25 + 2 + 2 + 2 + 2 + 2
 
-  \item Conectividad
-        \subitem Interfaz UART, I2C, SPI, GPIO, USB 3.1, PCIe 3.0, I2S, SLIMBus, SPMI, y más.
-        \subitem Soporte para Wi-Fi 6, Bluetooth 5.1 y más.
+      \item Soporte de memoria:
+            \subitem Cuatro canales de memoria de alta velocidad PoP LPDDR5 SDRAM (4 x 16-bit) diseñados para velocidades de hasta 2750 MHz de reloj y sistema de caché.
+            \subitem Soporte para memoria integrada UFS 3.1 gear 4.
 
-  \item Temperaturas de Operación:
-        \subitem Temperatura industrial: -30°C a 105°C.
+      \item Conectividad
+            \subitem Interfaz UART, I2C, SPI, GPIO, USB 3.1, PCIe 3.0, I2S, SLIMBus, SPMI, y más.
+            \subitem Soporte para Wi-Fi 6, Bluetooth 5.1 y más.
 
-  \item Precio aproximado: 800\euro.
+      \item Temperaturas de Operación:
+            \subitem Temperatura industrial: -30°C a 105°C.
+
+      \item Precio aproximado: 800\euro.
 \end{itemize}
 
 \textbf{Analog Devices:} ADSP-SC589
 \begin{itemize}
-  \item 
+      \item Procesador ARM Cortex-A5 Core
+            \subitem Up to 500 MHz por núcleo SHARC+.
+            \subitem 32 kB de caché de instrucciones L1/32 kB de caché de datos L1.
+            \subitem 256 kB de caché de nivel 2 (L2) con paridad.
+      \item Arquitectura Super Hardvard.
+      \item Núcleos SHARC+.
+            \subitem Hasta 500 MHz por núcleo SHARC+.
+            \subitem Hasta 5Mb (640Kb) de memoria SRAM L1 por núcleo con paridad.
+            \subitem Soporte de coma flotante de 32, 40, y 64 bits, y punto fijo de 32 bits.
+            \subitem Direccionamiento por byte, palabra corta, palabra y palabra larga.
+      \item Memoria.
+            \subitem SRAM L2 en chip con protección ECC hasta 256KB.
+            \subitem ROM L2 en chip hasta 512KB.
+            \subitem DDR3/DDR3L hasta 1GB.
+      \item Precio aproximado: 40\euro.
 \end{itemize}
+
+\newpage
+
+\chapter{Conclusión}
+El DSP TMS320C6678 de Texas Instruments es el elegido para la automatización industrial 
+debido a su alto rendimiento, conectividad avanzada, y precio asequible de 347,78\euro. 
+Este procesador incluye ocho núcleos DSP C66x y varios periféricos adicionales.
+
+El DSP QRB5165 de Qualcomm, aunque más caro (800\euro), es ideal para aplicaciones que 
+requieren alto rendimiento y conectividad avanzada, con un CPU Kryo 585 de 64 bits, 
+un DSP Hexagon 698, una GPU Adreno 650, y soporte para memoria LPDDR5 SDRAM y UFS 3.1.
+
+El DSP ADSP-SC589 de Analog Devices es una opción económica, con un precio de 40\euro, 
+y ofrece un rendimiento sólido con un procesador ARM Cortex-A5 Core y núcleos SHARC+.
+
+En resumen, el TMS320C6678 es la mejor opción general, mientras que el QRB5165 y el 
+ADSP-SC589 son alternativas válidas según las necesidades específicas del proyecto.
 
 \newpage
 
 \chapter{Bibliografía} % En formato APA
 \begin{enumerate}
-  \item Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
-  \item \url{https://odin.fi-b.unam.mx/labdsp/files/ADSP/apuntes/dsp_apli0_17.pdf}
-  \item \url{https://www.ti.com/lit/ds/symlink/tms320c6678.pdf?ts=1706410966216}
-  \item \url{https://www.mouser.es/c/semiconductors/embedded-processors-controllers/digital-signal-processors-controllers-dsp-dsc/?q=TMS320C6678&m=Texas%20Instruments&series=TMS320C6678}
-  \item \url{https://www.thundercomm.com/product/qualcomm-robotics-rb5-development-kit/}
-  \item \url{https://www.qualcomm.com/content/dam/qcomm-martech/dm-assets/documents/qrb5165-soc-product-brief_87-28730-1-b.pdf}
-  \item \url{https://docs.qualcomm.com/bundle/publicresource/topics/80-PV086-1/introduction.html}
-  \item \url{https://www.alldatasheet.com/datasheet-pdf/pdf/1388630/AD/ADSP-SC584.html?gad_source=1&gclid=CjwKCAjw65-zBhBkEiwAjrqRMDMgfdmVG4eEu8sXP37Q8HXxy_zamp3-L_mxcFnftncLqQ0oUCFjOhoCTzYQAvD_BwE}
+      \item \url{https://odin.fi-b.unam.mx/labdsp/files/ADSP/apuntes/dsp_apli0_17.pdf}
+      \item \url{https://www.ti.com/lit/ds/symlink/tms320c6678.pdf?ts=1706410966216}
+      \item \url{https://www.mouser.es/c/semiconductors/embedded-processors-controllers/digital-signal-processors-controllers-dsp-dsc/?q=TMS320C6678&m=Texas%20Instruments&series=TMS320C6678}
+      \item \url{https://www.thundercomm.com/product/qualcomm-robotics-rb5-development-kit/}
+      \item \url{https://www.qualcomm.com/content/dam/qcomm-martech/dm-assets/documents/qrb5165-soc-product-brief_87-28730-1-b.pdf}
+      \item \url{https://docs.qualcomm.com/bundle/publicresource/topics/80-PV086-1/introduction.html}
+      \item \url{https://www.alldatasheet.com/datasheet-pdf/pdf/1388630/AD/ADSP-SC584.html?gad_source=1&gclid=CjwKCAjw65-zBhBkEiwAjrqRMDMgfdmVG4eEu8sXP37Q8HXxy_zamp3-L_mxcFnftncLqQ0oUCFjOhoCTzYQAvD_BwE}
 \end{enumerate}
 
 \end{document}

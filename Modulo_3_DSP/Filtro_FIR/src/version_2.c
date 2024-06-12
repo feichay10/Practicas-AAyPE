@@ -5,22 +5,11 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * Filtro Fir: version 1
- * @file version1.c
+ * Filtro Fir: version 2
+ * @file version_2.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief Implementar la función del Filtro FIR para que se pueda trabajar con un
- * vector de datos y un vector de coeficientes cuyo tamaño se pueda modificar
- * fácilmente. Ambos vectores son pasados a la función como argumentos.
- * Dicha función tiene ser invocada desde el main y retornar un vector.
- * 
- * El programa efectúa la lectura de los valores de los
- * coeficientes (archivo coeficientes.csv) y de los valores del archivo
- * musica4.csv. Son 21 coeficientes. Del archivo musica4.csv no hace falta
- * obtener todos los valores, porque hablamos de un fichero muy grande. Se
- * puede jugar con el tamaño de los datos en las pruebas. El mínimo será 2000.
- * Además, los vectores hay que pasárselos como punteros. En este caso no
- * retorna el vector, sino el vector resultante también es pasado como un
- * puntero a la función.
+ * @brief Version 2: Debe incluir el uso de keywords, como const y restrict en
+ * las variables que consideres.
  * 
  * @version 0.1
  * @date 2024-01-29
@@ -38,9 +27,9 @@
 #define N 5
 
 float* inicializacion_coeficientes() {
-  float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
+  float* restrict vector_coeficientes = (float*)malloc(COEF * sizeof(float));
   int i = 0;
-  FILE* fich_coef = fopen("../data/Coeficientes.csv", "r");
+  FILE* restrict fich_coef = fopen("../data/Coeficientes.csv", "r");
   if (fich_coef == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
@@ -55,10 +44,10 @@ float* inicializacion_coeficientes() {
 }
 
 float* inicializacion_vector_in() {
-  float* array_data = (float*)malloc(N * sizeof(float));
+  float* restrict array_data = (float*)malloc(N * sizeof(float));
 
   int i = 0;
-  FILE* file_data = fopen("../data/musica4.csv", "r");
+  FILE* restrict file_data = fopen("../data/musica4.csv", "r");
   if (file_data == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
@@ -73,8 +62,8 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
-float* firfilter(float* vector_coef, float* vector_data) {
-  float* result = (float*)malloc(N * sizeof(float));
+float* firfilter(float* restrict vector_coef, float* restrict vector_data) {
+  float* restrict result = (float*)malloc(N * sizeof(float));
   int i, j;
   for (i = 0; i < N + COEF - 1; i++) {
     result[i] = 0;
@@ -86,9 +75,9 @@ float* firfilter(float* vector_coef, float* vector_data) {
 }
 
 int main() {
-  float* vector_in = inicializacion_vector_in();
-  float* vector_coef = inicializacion_coeficientes();
-  float* result;
+  float* restrict vector_in = inicializacion_vector_in();
+  float* restrict vector_coef = inicializacion_coeficientes();
+  float* restrict result;
   int i;
   clock_t start, end;
 
@@ -111,7 +100,7 @@ int main() {
   end = clock();
 
   printf("============================================\n");
-  printf("\t\tSalida:\n");
+  printf("\t\tVECTOR SALIDA:\n");
   for (i = 0; i < N + COEF - 1; i++) {
     printf("%f\n", result[i]);
   }

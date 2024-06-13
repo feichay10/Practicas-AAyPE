@@ -91,7 +91,7 @@ void firfilter(float* vector_coef, float* vector_data, float* result) {
     result[i] = 0;
     #pragma unroll(3)
     for (j = 0; j < COEF; j++) {
-      result[i] += vector_coef[i + j] * vector_data[i];
+      result[i] += vector_coef[j] * vector_data[i - j];
     }
   }
 }

@@ -77,40 +77,30 @@ void firfilter(const float* restrict vector_coef, const float* restrict vector_d
     int resto = COEF % BLOCK;
 
     while (iteraciones-- > 0) {
-      result[i] += vector_data[indice + 10 + i] * vector_coef[indice + 9];
-      result[i] += vector_data[indice + 9 + i] * vector_coef[indice + 8];
-      result[i] += vector_data[indice + 8 + i] * vector_coef[indice + 7];
-      result[i] += vector_data[indice + 7 + i] * vector_coef[indice + 6];
-      result[i] += vector_data[indice + 6 + i] * vector_coef[indice + 5];
-      result[i] += vector_data[indice + 5 + i] * vector_coef[indice + 4];
-      result[i] += vector_data[indice + 4 + i] * vector_coef[indice + 3];
-      result[i] += vector_data[indice + 3 + i] * vector_coef[indice + 2];
-      result[i] += vector_data[indice + 2 + i] * vector_coef[indice + 1];
-      result[i] += vector_data[indice + 1 + i] * vector_coef[indice + 0];
+      result[i] += vector_coef[0 + indice] * vector_data[i - 0 + indice];
+      result[i] += vector_coef[1 + indice] * vector_data[i - 1 + indice];
+      result[i] += vector_coef[2 + indice] * vector_data[i - 2 + indice];
+      result[i] += vector_coef[3 + indice] * vector_data[i - 3 + indice];
+      result[i] += vector_coef[4 + indice] * vector_data[i - 4 + indice];
+      result[i] += vector_coef[5 + indice] * vector_data[i - 5 + indice];
+      result[i] += vector_coef[6 + indice] * vector_data[i - 6 + indice];
+      result[i] += vector_coef[7 + indice] * vector_data[i - 7 + indice];
+      result[i] += vector_coef[8 + indice] * vector_data[i - 8 + indice];
+      result[i] += vector_coef[9 + indice] * vector_data[i - 9 + indice];
       indice += BLOCK;
     }
 
     switch (resto) {
-      case 9:
-        result[i] += vector_data[indice + 9 + i] * vector_coef[indice + 8];
-      case 8:
-        result[i] += vector_data[indice + 8 + i] * vector_coef[indice + 7];
-      case 7:
-        result[i] += vector_data[indice + 7 + i] * vector_coef[indice + 6];
-      case 6:
-        result[i] += vector_data[indice + 6 + i] * vector_coef[indice + 5];
-      case 5:
-        result[i] += vector_data[indice + 5 + i] * vector_coef[indice + 4];
-      case 4:
-        result[i] += vector_data[indice + 4 + i] * vector_coef[indice + 3];
-      case 3:
-        result[i] += vector_data[indice + 3 + i] * vector_coef[indice + 2];
-      case 2:
-        result[i] += vector_data[indice + 2 + i] * vector_coef[indice + 1];
-      case 1:
-        result[i] += vector_data[indice + 1 + i] * vector_coef[indice + 0];
-      default:
-        break;
+      case 1: result[i] += vector_coef[1 + indice] * vector_data[i - 1 + indice];
+      case 2: result[i] += vector_coef[2 + indice] * vector_data[i - 2 + indice];
+      case 3: result[i] += vector_coef[3 + indice] * vector_data[i - 3 + indice];
+      case 4: result[i] += vector_coef[4 + indice] * vector_data[i - 4 + indice];
+      case 5: result[i] += vector_coef[5 + indice] * vector_data[i - 5 + indice];
+      case 6: result[i] += vector_coef[6 + indice] * vector_data[i - 6 + indice];
+      case 7: result[i] += vector_coef[7 + indice] * vector_data[i - 7 + indice];
+      case 8: result[i] += vector_coef[8 + indice] * vector_data[i - 8 + indice];
+      case 9: result[i] += vector_coef[9 + indice] * vector_data[i - 9 + indice];
+      default: break;
     }
   }
 }

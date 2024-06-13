@@ -5,12 +5,11 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * Filtro Fir: version 2
- * @file version_2.c
+ * Filtro Fir: version 1
+ * @file version_1.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief Version 2: Uso de keywords, como const y restrict en variables
- * que consideres.
- *
+ * @brief Version base: Implementacion del filtro FIR
+ * 
  * @version 0.1
  * @date 2024-01-29
  *
@@ -78,20 +77,25 @@ float* inicializacion_vector_in() {
 }
 
 /**
- * @brief Aplicación del filtro FIR version 2 con keywords
+ * @brief Aplicación del filtro FIR version 1
  * 
  * @param vector_coef 
  * @param vector_data 
  * @param result 
  */
-void firfilter(float* restrict vector_coef, float* restrict vector_data, float* restrict result) {
+float* firfilter(float* vector_coef, float* vector_data) {
+  float* result = (float*)malloc((N + COEF - 1) * sizeof(float));
   int i, j;
   for (i = 0; i < N + COEF - 1; i++) {
     result[i] = 0;
     for (j = 0; j < COEF; j++) {
-      result[i] += vector_coef[j] * vector_data[i - j];
+      if (i - j >= 0 && i - j < N) {
+        result[i] += vector_coef[j] * vector_data[i - j];
+      }
     }
   }
+
+  return result;
 }
 
 /**
@@ -99,16 +103,16 @@ void firfilter(float* restrict vector_coef, float* restrict vector_data, float* 
  * 
  * @return uint64_t 
  */
-uint64_t rdtsc() {
+uint64_t rdtsc(){
   unsigned int lo, hi;
   __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
   return ((uint64_t)hi << 32) | lo;
 }
 
 int main() {
-  float* restrict vector_in = inicializacion_vector_in();
-  float* restrict vector_coef = inicializacion_coeficientes();
-  float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));
+  float* vector_in = inicializacion_vector_in();
+  float* vector_coef = inicializacion_coeficientes();
+  float* vector_result;
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos
@@ -124,7 +128,7 @@ int main() {
   for (i = 0; i < REPETICIONES; i++) {
     start_cycle = rdtsc();
     start = clock();
-    firfilter(vector_coef, vector_in, result);
+    vector_result = firfilter(vector_coef, vector_in);
     end = clock();
     end_cycle = rdtsc();
 
@@ -153,7 +157,7 @@ int main() {
 
   free(vector_coef);
   free(vector_in);
-  free(result);
+  // free(vector_result);
 
   return 0;
 }

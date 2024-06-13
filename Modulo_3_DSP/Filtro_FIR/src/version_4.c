@@ -83,13 +83,14 @@ float* inicializacion_vector_in() {
  * @param vector_data 
  * @param result 
  */
-void firfilter(float* vector_coef, float* vector_data, float* result) {
+void firfilter(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
   int i, j;
 
   #pragma MUST_ITERATE(1000)
+  // # pragma GCC ivdep
   for (i = 0; i < N + COEF - 1; i++) {
     result[i] = 0;
-    #pragma unroll(3)
+    #pragma unroll(10)
     for (j = 0; j < COEF; j++) {
       result[i] += vector_coef[j] * vector_data[i - j];
     }
@@ -108,10 +109,10 @@ uint64_t rdtsc(){
 }
 
 int main() {
-  #pragma DATA_ALIGN(8)
-  float* restrict vector_in = inicializacion_vector_in();
-  float* restrict vector_coef = inicializacion_coeficientes();
-  float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));
+  // #pragma DATA_ALIGN(8)
+  float* vector_in = inicializacion_vector_in();
+  float* vector_coef = inicializacion_coeficientes();
+  float* result = (float*)calloc(N + COEF - 1, sizeof(float));
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos

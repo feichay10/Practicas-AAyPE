@@ -70,7 +70,7 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
-void firfilter(const float* restrict vector_coef, const float* restrict vector_data, float* restrict result) {
+void firfilter(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
   for (int i = 0; i < COEF; i++) {
     int indice = 0;
     int iteraciones = COEF / BLOCK;
@@ -112,9 +112,9 @@ uint64_t rdtsc() {
 }
 
 int main() {
-  float* restrict vector_in = inicializacion_vector_in();
-  float* restrict vector_coef = inicializacion_coeficientes();
-  float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));
+  float* vector_in = inicializacion_vector_in();
+  float* vector_coef = inicializacion_coeficientes();
+  float* result = (float*)calloc(N + COEF - 1, sizeof(float));
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos

@@ -77,7 +77,7 @@ float* inicializacion_vector_in() {
 }
 
 /**
- * @brief Aplicación del filtro FIR version 1
+ * @brief Aplicación del filtro FIR version base
  * 
  * @param vector_coef 
  * @param vector_data 

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/time.h>
 
 #define COEF 5
 #define N 5
@@ -117,8 +118,9 @@ int main() {
   }
   printf("============================================\n");
 
+  // Tiempo de ejecución en milisegundos
   double time_taken = ((double)(end - start) / CLOCKS_PER_SEC) * 1000;
-  printf("\nTiempo de ejecución: %f\n", time_taken);
+  printf("\nTiempo de ejecución: %f ms\n", time_taken);
 
   free((float*)vector_coef);
   free((float*)vector_in);

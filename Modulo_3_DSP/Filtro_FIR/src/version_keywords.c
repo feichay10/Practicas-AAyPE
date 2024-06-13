@@ -5,10 +5,11 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * Filtro Fir: version 1
- * @file version1.c
+ * Filtro Fir: version 2
+ * @file version_2.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief Version 1: Programar el doble bucle para el filtro FIR
+ * @brief Version 2: Debe incluir el uso de keywords, como const y restrict en
+ * las variables que consideres.
  * 
  * @version 0.1
  * @date 2024-01-29
@@ -25,16 +26,16 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-#define COEF 25  // Número de coeficientes del filtro
-#define N 7000     // Número de datos de entrada
+#define COEF 5 // Número de coeficientes del filtro
+#define N 5    // Número de datos de entrada
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
 #define REPETICIONES 1000
 
 float* inicializacion_coeficientes() {
-  float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
+  float* restrict vector_coeficientes = (float*)malloc(COEF * sizeof(float));
   int i = 0;
-  FILE* fich_coef = fopen("../data/Coeficientes.csv", "r");
+  FILE* restrict fich_coef = fopen("../data/Coeficientes.csv", "r");
   if (fich_coef == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
@@ -49,10 +50,10 @@ float* inicializacion_coeficientes() {
 }
 
 float* inicializacion_vector_in() {
-  float* array_data = (float*)malloc(N * sizeof(float));
+  float* restrict array_data = (float*)malloc(N * sizeof(float));
 
   int i = 0;
-  FILE* file_data = fopen("../data/musica4.csv", "r");
+  FILE* restrict file_data = fopen("../data/musica4.csv", "r");
   if (file_data == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
@@ -67,7 +68,8 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
-void firfilter(float* vector_coef, float* vector_data, float* result) {
+float* firfilter(float* restrict vector_coef, float* restrict vector_data) {
+  float* restrict result = (float*)malloc(N * sizeof(float));
   int i, j;
   for (i = 0; i < N + COEF - 1; i++) {
     result[i] = 0;
@@ -75,6 +77,8 @@ void firfilter(float* vector_coef, float* vector_data, float* result) {
       result[i] += vector_coef[i + j] * vector_data[i];
     }
   }
+
+  return result;
 }
 
 uint64_t rdtsc(){
@@ -86,7 +90,7 @@ uint64_t rdtsc(){
 int main() {
   float* vector_in = inicializacion_vector_in();
   float* vector_coef = inicializacion_coeficientes();
-  float* result = (float*)calloc(N + COEF - 1, sizeof(float));
+  float* result;
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos
@@ -113,15 +117,20 @@ int main() {
 
   // APLICACION DEL FIR FILTER
   for (i = 0; i < REPETICIONES; i++) {
-    start_cycle = rdtsc();
     clock_gettime(CLOCK_MONOTONIC, &start);
-    firfilter(vector_coef, vector_in, result);
+    result = firfilter(vector_coef, vector_in);
     clock_gettime(CLOCK_MONOTONIC, &end);
-    end_cycle = rdtsc();
 
-    elapsed = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
+    elapsed += (end.tv_sec - start.tv_sec) * 1000.0;
+    elapsed += (end.tv_nsec - start.tv_nsec) / 1000000.0;
     mean_time[i] = elapsed;
+
+    start_cycle = rdtsc();
+    result = firfilter(vector_coef, vector_in);
+    end_cycle = rdtsc();
     mean_cycles[i] = end_cycle - start_cycle;
+
+    free((float*)result);
   }
 
   // Calculo de la media
@@ -137,14 +146,13 @@ int main() {
   mean_cycles_result /= REPETICIONES;
 
   printf("============================================\n");
-  printf("\t\tResultados:");
+  printf("\t\tResultados:\n");
   printf("\nTiempo de ejecución: %f ms\n", mean_time_result);
   printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_result);
   printf("============================================\n");
 
-  free(vector_coef);
-  free(vector_in);
-  free(result);
+  free((float*)vector_coef);
+  free((float*)vector_in);
 
   return 0;
 }

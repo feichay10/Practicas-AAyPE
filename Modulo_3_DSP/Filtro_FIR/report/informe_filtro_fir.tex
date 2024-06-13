@@ -259,7 +259,7 @@ end_cycle = rdtsc();
 \end{lstlisting}
 
 Por otra parte, para calcular el tiempo de ejecución y los ciclos de reloj se ha repetido \emph{N} veces, para obtener un promedio de los valores.
-En este caso, se ha decidido hacer 1000 repeticiones, pero se puede cambiar el valor de \emph{N}
+En este caso, se ha decidido hacer 100 repeticiones, pero se puede cambiar el valor de \emph{N}
 ya que se define como una constante en cada versión del filtro FIR.
 \begin{lstlisting}
 #define REPETICIONES 1000
@@ -342,7 +342,7 @@ y devuelve un puntero a float con los valores de la salida del filtro FIR. La fu
 float* firfilter(float* vector_coef, float* vector_data) {
   float* result = (float*)malloc((N + COEF - 1) * sizeof(float));
   int i, j;
-  for (i = 0; i < N + COEF - 1; i++) {
+  for (i = 0; i < N; i++) {
     result[i] = 0;
     for (j = 0; j < COEF; j++) {
       if (i - j >= 0 && i - j < N) {
@@ -360,7 +360,7 @@ Luego, se inicializa un bucle que recorre el vector de salida, y dentro de este 
 Dentro de este segundo bucle se comprueba si el índice de la salida menos el índice del bucle interno es mayor o igual a 0 y menor que el tamaño del vector de datos de entrada.
 Si se cumple la condición, se multiplica el valor del coeficiente por el valor del dato de entrada y se suma al valor de la salida.
 
-\section{Versión 1}
+\section{Versión 1 - Mejora de la implementación base}
 Para la versión 1 se ha mejorado la implementación base del filtro FIR. Lo que se ha hecho es trabajar directamente con los punteros de los vectores de coeficientes,
 de los datos de entrada y de la salida. Usar punteros directamente y no devolver un puntero a float con los valores de la salida del filtro FIR es más eficiente. Además, 
 se ha eliminado la condición del bucle interno, ya que se ha comprobado que no es necesario.
@@ -368,7 +368,7 @@ se ha eliminado la condición del bucle interno, ya que se ha comprobado que no 
 \begin{lstlisting}
 void firfilter(float* vector_coef, float* vector_data, float* result) {
   int i, j;
-  for (i = 0; i < N + COEF - 1; i++) {
+  for (i = 0; i < N; i++) {
     result[i] = 0;
     for (j = 0; j < COEF; j++) {
       result[i] += vector_coef[j] * vector_data[i - j];
@@ -377,8 +377,129 @@ void firfilter(float* vector_coef, float* vector_data, float* result) {
 }
 \end{lstlisting}
 
-\section{Versión 2}
+\newpage
 
+\section{Versión 2 - Uso de keywords}
+En la segunda implementación se ha incluido el uso de keywords, como \emph{const} y \emph{restrict}. La keyword \emph{\textbf{const}} se utiliza para declarar
+una variable como constante, es decir, que no se puede modificar su valor. La keyword \emph{\textbf{restrict}} se utiliza para indicar que dos punteros no se solapan,
+es decir, que no apuntan a la misma dirección de memoria. Esto permite al compilador realizar optimizaciones en el código. La función es la siguiente:
+
+\begin{lstlisting}
+void firfilter(const float* restrict const vector_coef,
+               const float* restrict const vector_data,
+               float* restrict const result) {
+  int i, j;
+  for (i = 0; i < N; i++) {
+    result[i] = 0;
+    for (j = 0; j < COEF; j++) {
+      result[i] += vector_coef[j] * vector_data[i - j];
+    }
+  }
+}
+\end{lstlisting}
+
+\newpage
+
+\section{Versión 3 - Desenrrollado manual}
+En la tercera implementación se ha desenrrollado manualmente el bucle interior. Esta es un técnica de optimización que consiste en incrementar
+el número de instrucciones dentro de un bucle para disminuir el número de iteraciones del bucle. En este caso, se ha desenrrollado el bucle interior
+expandiendo cada iteración de \emph{j} manualmente, en este caso se ha desenrrollado 25 veces. Además, se agrega una condición para evitar que se acceda
+a límites fuera del vector de datos de entrada. Por último, se multiplica por los elementos correspondientes del vector de datos y se acumulan en el resultado.
+El código es el siguiente:
+
+\begin{lstlisting}
+void firfilter(const float* restrict const vector_coef, 
+               const float* restrict const vector_data, 
+               float* restrict const result) {
+  int i;
+  for (i = 0; i < N; i++) {
+    result[i] = 0;
+
+    // Desenrollado manual del bucle interno
+    if (i >= 24) result[i] += vector_coef[24] * vector_data[i - 24];
+    if (i >= 23) result[i] += vector_coef[23] * vector_data[i - 23];
+    if (i >= 22) result[i] += vector_coef[22] * vector_data[i - 22];
+    if (i >= 21) result[i] += vector_coef[21] * vector_data[i - 21];
+    if (i >= 20) result[i] += vector_coef[20] * vector_data[i - 20];
+    if (i >= 19) result[i] += vector_coef[19] * vector_data[i - 19];
+    if (i >= 18) result[i] += vector_coef[18] * vector_data[i - 18];
+    if (i >= 17) result[i] += vector_coef[17] * vector_data[i - 17];
+    if (i >= 16) result[i] += vector_coef[16] * vector_data[i - 16];
+    if (i >= 15) result[i] += vector_coef[15] * vector_data[i - 15];
+    if (i >= 14) result[i] += vector_coef[14] * vector_data[i - 14];
+    if (i >= 13) result[i] += vector_coef[13] * vector_data[i - 13];
+    if (i >= 12) result[i] += vector_coef[12] * vector_data[i - 12];
+    if (i >= 11) result[i] += vector_coef[11] * vector_data[i - 11];
+    if (i >= 10) result[i] += vector_coef[10] * vector_data[i - 10];
+    if (i >= 9) result[i] += vector_coef[9] * vector_data[i - 9];
+    if (i >= 8) result[i] += vector_coef[8] * vector_data[i - 8];
+    if (i >= 7) result[i] += vector_coef[7] * vector_data[i - 7];
+    if (i >= 6) result[i] += vector_coef[6] * vector_data[i - 6];
+    if (i >= 5) result[i] += vector_coef[5] * vector_data[i - 5];
+    if (i >= 4) result[i] += vector_coef[4] * vector_data[i - 4];
+    if (i >= 3) result[i] += vector_coef[3] * vector_data[i - 3];
+    if (i >= 2) result[i] += vector_coef[2] * vector_data[i - 2];
+    if (i >= 1) result[i] += vector_coef[1] * vector_data[i - 1];
+    result[i] += vector_coef[0] * vector_data[i - 0];
+  }
+}
+\end{lstlisting}
+
+\newpage
+
+\section{Versión 4 - Uso de pragmas}
+En la cuarta implementación se ha utilizado \emph{pragmas} para optimizar el código. Los \emph{pragmas} son directivas que se utilizan para
+indicar al compilador cómo debe compilar el código. En este caso, se ha utilizado el pragma \emph{\#pragma omp parallel for} para paralelizar el bucle
+exterior del filtro FIR. Y se ha utilizado el pragma \emph{\#pragma unroll 25} para desenrrollar el bucle interior. El código es el siguiente:
+\begin{lstlisting}
+void firfilter(const float* restrict const vector_coef, 
+               const float* restrict const vector_data,
+               float* restrict const result) {
+  #pragma omp parallel for
+  for (int i = 0; i < N; i++) {
+    result[i] = 0;
+    #pragma unroll 25
+    for (int j = 0; j < COEF; j++) {
+      result[i] += vector_coef[j] * vector_data[i - j];
+    }
+  }
+}
+\end{lstlisting}
+
+% \newpage
+
+\section{Versión 5 - Uso de intrínsecos}
+Por último, en la quinta implementación se ha utilizado intrínsecos SIMD (Single Instruction, Multiple Data) 128 bits para optimizar el código.
+Los intrínsecos son funciones que se utilizan para acceder a instrucciones específicas de la CPU. En este caso, se ha utilizado la instrucción
+\emph{\_\_m128} para acceder a los registros SIMD de 128 bits. Además, se ha utilizado la función \emph{\_mm\_loadu\_ps()} para cargar los valores
+de los coeficientes y los datos de entrada en registros. La función \emph{\_mm\_mul\_ps()} para multiplicar los valores de los coeficientes por los valores
+de los datos de entrada y la función \emph{\_mm\_add\_ps()} para sumar los resultados. Por último, se ha utilizado la función \emph{\_mm\_storeu\_ps()} para
+almacenar los resultados en el vector de salida. Haciendo uso de los \emph{intrinsics} se consigue una mejora en el rendimiento del filtro FIR. El código es el siguiente:
+
+\begin{lstlisting}
+void firfilter(const float* restrict const vector_coef, 
+               const float* restrict const vector_data, 
+               float* restrict const result) {
+  int i, j;
+  __m128 coef_reg = _mm_loadu_ps(vector_coef);  
+  __m128 data_reg;
+  int simd_size = 8;
+
+  for (i = 0; i < N; i += simd_size) {
+    __m128 result_reg = _mm_setzero_ps();
+    for (j = 0; j < COEF; j++) {
+      if (i >= j) {
+        data_reg = _mm_loadu_ps(&vector_data[i - j]);
+        __m128 coef_mul_data = _mm_mul_ps(coef_reg, data_reg);
+        result_reg = _mm_add_ps(result_reg, coef_mul_data);
+      }
+    }
+    _mm_storeu_ps(&result[i], result_reg);
+  }
+}
+\end{lstlisting}
+
+\chapter{Resultados}
 
 \newpage
 

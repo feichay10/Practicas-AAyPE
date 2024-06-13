@@ -32,7 +32,7 @@
 #define BLOCK 10  // Número de BLOCKs en los que se divide el bucle
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
-#define REPETICIONES 1000
+#define REPETICIONES 100
 
 float* inicializacion_coeficientes() {
   float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
@@ -70,38 +70,38 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
+// Implementación del filtro FIR desenrrollado manualmente y optimizado
 void firfilter(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
-  for (int i = 0; i < COEF; i++) {
-    int indice = 0;
-    int iteraciones = COEF / BLOCK;
-    int resto = COEF % BLOCK;
+  int i;
+  for (i = 0; i < N; i++) {
+    result[i] = 0;
 
-    while (iteraciones-- > 0) {
-      result[i] += vector_coef[0 + indice] * vector_data[i - 0 + indice];
-      result[i] += vector_coef[1 + indice] * vector_data[i - 1 + indice];
-      result[i] += vector_coef[2 + indice] * vector_data[i - 2 + indice];
-      result[i] += vector_coef[3 + indice] * vector_data[i - 3 + indice];
-      result[i] += vector_coef[4 + indice] * vector_data[i - 4 + indice];
-      result[i] += vector_coef[5 + indice] * vector_data[i - 5 + indice];
-      result[i] += vector_coef[6 + indice] * vector_data[i - 6 + indice];
-      result[i] += vector_coef[7 + indice] * vector_data[i - 7 + indice];
-      result[i] += vector_coef[8 + indice] * vector_data[i - 8 + indice];
-      result[i] += vector_coef[9 + indice] * vector_data[i - 9 + indice];
-      indice += BLOCK;
-    }
-
-    switch (resto) {
-      case 1: result[i] += vector_coef[1 + indice] * vector_data[i - 1 + indice];
-      case 2: result[i] += vector_coef[2 + indice] * vector_data[i - 2 + indice];
-      case 3: result[i] += vector_coef[3 + indice] * vector_data[i - 3 + indice];
-      case 4: result[i] += vector_coef[4 + indice] * vector_data[i - 4 + indice];
-      case 5: result[i] += vector_coef[5 + indice] * vector_data[i - 5 + indice];
-      case 6: result[i] += vector_coef[6 + indice] * vector_data[i - 6 + indice];
-      case 7: result[i] += vector_coef[7 + indice] * vector_data[i - 7 + indice];
-      case 8: result[i] += vector_coef[8 + indice] * vector_data[i - 8 + indice];
-      case 9: result[i] += vector_coef[9 + indice] * vector_data[i - 9 + indice];
-      default: break;
-    }
+    // Desenrollado manual del bucle interno
+    if (i >= 24) result[i] += vector_coef[24] * vector_data[i - 24];
+    if (i >= 23) result[i] += vector_coef[23] * vector_data[i - 23];
+    if (i >= 22) result[i] += vector_coef[22] * vector_data[i - 22];
+    if (i >= 21) result[i] += vector_coef[21] * vector_data[i - 21];
+    if (i >= 20) result[i] += vector_coef[20] * vector_data[i - 20];
+    if (i >= 19) result[i] += vector_coef[19] * vector_data[i - 19];
+    if (i >= 18) result[i] += vector_coef[18] * vector_data[i - 18];
+    if (i >= 17) result[i] += vector_coef[17] * vector_data[i - 17];
+    if (i >= 16) result[i] += vector_coef[16] * vector_data[i - 16];
+    if (i >= 15) result[i] += vector_coef[15] * vector_data[i - 15];
+    if (i >= 14) result[i] += vector_coef[14] * vector_data[i - 14];
+    if (i >= 13) result[i] += vector_coef[13] * vector_data[i - 13];
+    if (i >= 12) result[i] += vector_coef[12] * vector_data[i - 12];
+    if (i >= 11) result[i] += vector_coef[11] * vector_data[i - 11];
+    if (i >= 10) result[i] += vector_coef[10] * vector_data[i - 10];
+    if (i >= 9) result[i] += vector_coef[9] * vector_data[i - 9];
+    if (i >= 8) result[i] += vector_coef[8] * vector_data[i - 8];
+    if (i >= 7) result[i] += vector_coef[7] * vector_data[i - 7];
+    if (i >= 6) result[i] += vector_coef[6] * vector_data[i - 6];
+    if (i >= 5) result[i] += vector_coef[5] * vector_data[i - 5];
+    if (i >= 4) result[i] += vector_coef[4] * vector_data[i - 4];
+    if (i >= 3) result[i] += vector_coef[3] * vector_data[i - 3];
+    if (i >= 2) result[i] += vector_coef[2] * vector_data[i - 2];
+    if (i >= 1) result[i] += vector_coef[1] * vector_data[i - 1];
+    result[i] += vector_coef[0] * vector_data[i - 0];
   }
 }
 

@@ -86,7 +86,7 @@ float* inicializacion_vector_in() {
  */
 void firfilter(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
   int i, j;
-  for (i = 0; i < N + COEF - 1; i++) {
+  for (i = 0; i < N; i++) {
     result[i] = 0;
     for (j = 0; j < COEF; j++) {
       result[i] += vector_coef[j] * vector_data[i - j];

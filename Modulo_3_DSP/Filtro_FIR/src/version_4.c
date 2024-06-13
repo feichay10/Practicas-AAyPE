@@ -29,7 +29,7 @@
 #define N 7000   // Número de datos de entrada
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
-#define REPETICIONES 1000
+#define REPETICIONES 100
 
 /**
  * @brief Inicialización de los coeficientes del filtro FIR
@@ -77,21 +77,18 @@ float* inicializacion_vector_in() {
 
 
 /**
- * @brief Aplicación del filtro FIR version 4 con desenrrollado hecho por pragmas
+ * @brief Aplicación del filtro FIR version 4 utilizando pragmas
  * 
  * @param vector_coef 
  * @param vector_data 
  * @param result 
  */
 void firfilter(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
-  int i, j;
-
-  #pragma MUST_ITERATE(1000)
-  // # pragma GCC ivdep
-  for (i = 0; i < N + COEF - 1; i++) {
+  #pragma omp parallel for
+  for (int i = 0; i < N; i++) {
     result[i] = 0;
-    #pragma unroll(10)
-    for (j = 0; j < COEF; j++) {
+    #pragma unroll 25
+    for (int j = 0; j < COEF; j++) {
       result[i] += vector_coef[j] * vector_data[i - j];
     }
   }

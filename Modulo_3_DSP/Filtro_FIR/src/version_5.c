@@ -23,13 +23,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <xmmintrin.h>  // SSE intrinsics
+#include <immintrin.h> // Librería para intrinsecos (intrinsics) de SIMD
 
 #define COEF 25  // Número de coeficientes del filtro
 #define N 7000   // Número de datos de entrada
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
-#define REPETICIONES 1000
+#define REPETICIONES 100
 
 /**
  * @brief Inicialización de los coeficientes del filtro FIR
@@ -76,28 +76,35 @@ float* inicializacion_vector_in() {
 }
 
 /**
- * @brief Aplicación del filtro FIR version 4 con intrinsecos
+ * @brief Aplicación del filtro FIR version 5 utilizando intrinsecos
+ * int i, j;
+ * for (i = 0; i < N; i++) {
+ *    result[i] = 0;
+ *    for (j = 0; j < COEF; j++) {
+ *      result[i] += vector_coef[j] * vector_data[i - j];
+ *    }
+ * }
  * 
  * @param vector_coef 
  * @param vector_data 
  * @param result 
  */
-void firfilter(float* restrict vector_coef, float* restrict vector_data, float* restrict result) {
+void firfilter(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
   int i, j;
-  __m128 coef, data, res;
+  __m128 coef_reg = _mm_loadu_ps(vector_coef);  // Cargar los primeros 4 coeficientes (sin alineamiento)
+  __m128 data_reg; // Registro para los datos
+  int simd_size = 8;
 
-  for (i = 0; i < N + COEF - 1; i++) {
-    res = _mm_setzero_ps();
-    for (j = 0; j < COEF; j += 4) {
-      if (i - j >= 0) {
-        coef = _mm_loadu_ps(&vector_coef[j]);
-        data = _mm_loadu_ps(&vector_data[i - j]);
-        res = _mm_add_ps(res, _mm_mul_ps(coef, data));
+  for (i = 0; i < N; i += simd_size) {
+    __m128 result_reg = _mm_setzero_ps();  // Inicializar registro resultado a 0
+    for (j = 0; j < COEF; j++) {
+      if (i >= j) {
+        data_reg = _mm_loadu_ps(&vector_data[i - j]);  // Cargar 4 elementos de vector_data (sin alineamiento)
+        __m128 coef_mul_data = _mm_mul_ps(coef_reg, data_reg);  // Multiplicación coef_reg * data_reg
+        result_reg = _mm_add_ps(result_reg, coef_mul_data);  // Sumar al registro resultado
       }
     }
-    float temp[4];
-    _mm_storeu_ps(temp, res);
-    result[i] = temp[0] + temp[1] + temp[2] + temp[3];
+    _mm_storeu_ps(&result[i], result_reg);  // Almacenar resultado de 4 elementos (sin alineamiento)
   }
 }
 

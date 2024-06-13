@@ -127,40 +127,41 @@ void firfilter_v2(const float* restrict const vector_coef, const float* restrict
   }
 }
 
+// Implementación del filtro FIR desenrrollado manualmente y optimizado
 void firfilter_v3(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
-  for (int i = 0; i < COEF; i++) {
-    int indice = 0;
-    int iteraciones = COEF / BLOCK;
-    int resto = COEF % BLOCK;
+  int i;
+  for (i = 0; i < N; i++) {
+    result[i] = 0;
 
-    while (iteraciones-- > 0) {
-      result[i] += vector_coef[0 + indice] * vector_data[i - 0 + indice];
-      result[i] += vector_coef[1 + indice] * vector_data[i - 1 + indice];
-      result[i] += vector_coef[2 + indice] * vector_data[i - 2 + indice];
-      result[i] += vector_coef[3 + indice] * vector_data[i - 3 + indice];
-      result[i] += vector_coef[4 + indice] * vector_data[i - 4 + indice];
-      result[i] += vector_coef[5 + indice] * vector_data[i - 5 + indice];
-      result[i] += vector_coef[6 + indice] * vector_data[i - 6 + indice];
-      result[i] += vector_coef[7 + indice] * vector_data[i - 7 + indice];
-      result[i] += vector_coef[8 + indice] * vector_data[i - 8 + indice];
-      result[i] += vector_coef[9 + indice] * vector_data[i - 9 + indice];
-      indice += BLOCK;
-    }
-
-    switch (resto) {
-      case 1: result[i] += vector_coef[1 + indice] * vector_data[i - 1 + indice];
-      case 2: result[i] += vector_coef[2 + indice] * vector_data[i - 2 + indice];
-      case 3: result[i] += vector_coef[3 + indice] * vector_data[i - 3 + indice];
-      case 4: result[i] += vector_coef[4 + indice] * vector_data[i - 4 + indice];
-      case 5: result[i] += vector_coef[5 + indice] * vector_data[i - 5 + indice];
-      case 6: result[i] += vector_coef[6 + indice] * vector_data[i - 6 + indice];
-      case 7: result[i] += vector_coef[7 + indice] * vector_data[i - 7 + indice];
-      case 8: result[i] += vector_coef[8 + indice] * vector_data[i - 8 + indice];
-      case 9: result[i] += vector_coef[9 + indice] * vector_data[i - 9 + indice];
-      default: break;
-    }
+    // Desenrollado manual del bucle interno
+    if (i >= 24) result[i] += vector_coef[24] * vector_data[i - 24];
+    if (i >= 23) result[i] += vector_coef[23] * vector_data[i - 23];
+    if (i >= 22) result[i] += vector_coef[22] * vector_data[i - 22];
+    if (i >= 21) result[i] += vector_coef[21] * vector_data[i - 21];
+    if (i >= 20) result[i] += vector_coef[20] * vector_data[i - 20];
+    if (i >= 19) result[i] += vector_coef[19] * vector_data[i - 19];
+    if (i >= 18) result[i] += vector_coef[18] * vector_data[i - 18];
+    if (i >= 17) result[i] += vector_coef[17] * vector_data[i - 17];
+    if (i >= 16) result[i] += vector_coef[16] * vector_data[i - 16];
+    if (i >= 15) result[i] += vector_coef[15] * vector_data[i - 15];
+    if (i >= 14) result[i] += vector_coef[14] * vector_data[i - 14];
+    if (i >= 13) result[i] += vector_coef[13] * vector_data[i - 13];
+    if (i >= 12) result[i] += vector_coef[12] * vector_data[i - 12];
+    if (i >= 11) result[i] += vector_coef[11] * vector_data[i - 11];
+    if (i >= 10) result[i] += vector_coef[10] * vector_data[i - 10];
+    if (i >= 9) result[i] += vector_coef[9] * vector_data[i - 9];
+    if (i >= 8) result[i] += vector_coef[8] * vector_data[i - 8];
+    if (i >= 7) result[i] += vector_coef[7] * vector_data[i - 7];
+    if (i >= 6) result[i] += vector_coef[6] * vector_data[i - 6];
+    if (i >= 5) result[i] += vector_coef[5] * vector_data[i - 5];
+    if (i >= 4) result[i] += vector_coef[4] * vector_data[i - 4];
+    if (i >= 3) result[i] += vector_coef[3] * vector_data[i - 3];
+    if (i >= 2) result[i] += vector_coef[2] * vector_data[i - 2];
+    if (i >= 1) result[i] += vector_coef[1] * vector_data[i - 1];
+    result[i] += vector_coef[0] * vector_data[i - 0];
   }
 }
+
 
 void firfilter_v4(const float* restrict const vector_coef, const float* restrict const vector_data, float* restrict const result) {
   int i, j;
@@ -199,132 +200,218 @@ void firfilter_v5(float* restrict vector_coef, float* restrict vector_data, floa
 int main() {
   float* vector_in = inicializacion_vector_in();
   float* vector_coef = inicializacion_coeficientes();
-  int i;
-
-  // Variables para calcular el tiempo de ejecución
-  uint64_t start, end;
-  double sum_time = 0;
-  uint64_t sum_cycles = 0;
-
-  // Variables para almacenar los resultados de cada versión
   float* result_base;
   float* result_v1 = (float*)calloc(N + COEF - 1, sizeof(float));
   float* result_v2 = (float*)calloc(N + COEF - 1, sizeof(float));
   float* result_v3 = (float*)calloc(N + COEF - 1, sizeof(float));
   float* result_v4 = (float*)calloc(N + COEF - 1, sizeof(float));
   float* result_v5 = (float*)calloc(N + COEF - 1, sizeof(float));
+  int i;
 
-  // Variables para almacenar los tiempos de ejecución y ciclos de cada versión
-  double time_base, time_v1, time_v2, time_v3, time_v4, time_v5;
-  uint64_t cycles_base, cycles_v1, cycles_v2, cycles_v3, cycles_v4, cycles_v5;
+  // Variables para calcular el tiempo de ejecución para cada versión
+  clock_t start, end;
+  double elapsed = 0;
+  uint64_t start_cycle, end_cycle;
 
-  // Variables para almacenar los tiempos de ejecución y ciclos de cada versión
-  double media_time_base, media_time_v1, media_time_v2, media_time_v3, media_time_v4, media_time_v5;
-  uint64_t media_cycles_base, media_cycles_v1, media_cycles_v2, media_cycles_v3, media_cycles_v4, media_cycles_v5;
+  // Variables para calcular la media de tiempo y ciclos
+  float mean_time_base[REPETICIONES], mean_time_v1[REPETICIONES], mean_time_v2[REPETICIONES], mean_time_v3[REPETICIONES], mean_time_v4[REPETICIONES], mean_time_v5[REPETICIONES];
+  uint64_t mean_cycles_base[REPETICIONES], mean_cycles_v1[REPETICIONES], mean_cycles_v2[REPETICIONES], mean_cycles_v3[REPETICIONES], mean_cycles_v4[REPETICIONES], mean_cycles_v5[REPETICIONES];
 
   // Aplicación del filtro FIR
-
   // Versión base
   for (i = 0; i < REPETICIONES; i++) {
-    start = rdtsc();
+    start_cycle = rdtsc();
+    start = clock();
     result_base = firfilter_base(vector_coef, vector_in);
-    end = rdtsc();
-    sum_time += (double)(end - start);
-    sum_cycles += end - start;
+    end = clock();
+    end_cycle = rdtsc();
+
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+    mean_time_base[i] = elapsed;
+    mean_cycles_base[i] = end_cycle - start_cycle;
   }
 
-  media_time_base = sum_time / REPETICIONES;
-  media_cycles_base = sum_cycles / REPETICIONES;
+  // Calculo de la media base
+  double mean_time_base_result = 0;
+  uint64_t mean_cycles_base_result = 0;
 
   for (i = 0; i < REPETICIONES; i++) {
-    start = rdtsc();
+    mean_time_base_result += mean_time_base[i];
+    mean_cycles_base_result += mean_cycles_base[i];
+  }
+
+  mean_time_base_result /= REPETICIONES;
+  mean_cycles_base_result /= REPETICIONES;
+
+  printf("============================================\n");
+  printf("\t\tResultados version base:");
+  printf("\nTiempo de ejecución: %f ms\n", mean_time_base_result);
+  printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_base_result);
+  printf("============================================\n");
+
+  elapsed = 0;
+
+  // Versión 1
+  for (i = 0; i < REPETICIONES; i++) {
+    start_cycle = rdtsc();
+    start = clock();
     firfilter_v1(vector_coef, vector_in, result_v1);
-    end = rdtsc();
-    sum_time += (double)(end - start);
-    sum_cycles += end - start;
+    end = clock();
+    end_cycle = rdtsc();
+
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+    mean_time_v1[i] = elapsed;
+    mean_cycles_v1[i] = end_cycle - start_cycle;
   }
 
-  media_time_v1 = sum_time / REPETICIONES;
-  media_cycles_v1 = sum_cycles / REPETICIONES;
+  // Calculo de la media v1
+  double mean_time_v1_result = 0;
+  uint64_t mean_cycles_v1_result = 0;
 
   for (i = 0; i < REPETICIONES; i++) {
-    start = rdtsc();
+    mean_time_v1_result += mean_time_v1[i];
+    mean_cycles_v1_result += mean_cycles_v1[i];
+  }
+
+  mean_time_v1_result /= REPETICIONES;
+  mean_cycles_v1_result /= REPETICIONES;
+
+  printf("\n\n============================================\n");
+  printf("\t\tResultados version 1:");
+  printf("\nTiempo de ejecución: %f ms\n", mean_time_v1_result);
+  printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_v1_result);
+  printf("============================================\n");
+
+  elapsed = 0;
+
+  // Versión 2
+  for (i = 0; i < REPETICIONES; i++) {
+    start_cycle = rdtsc();
+    start = clock();
     firfilter_v2(vector_coef, vector_in, result_v2);
-    end = rdtsc();
-    sum_time += (double)(end - start);
-    sum_cycles += end - start;
+    end = clock();
+    end_cycle = rdtsc();
+
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+    mean_time_v2[i] = elapsed;
+    mean_cycles_v2[i] = end_cycle - start_cycle;
   }
 
-  media_time_v2 = sum_time / REPETICIONES;
-  media_cycles_v2 = sum_cycles / REPETICIONES;
+  // Calculo de la media v2
+  double mean_time_v2_result = 0;
+  uint64_t mean_cycles_v2_result = 0;
 
   for (i = 0; i < REPETICIONES; i++) {
-    start = rdtsc();
+    mean_time_v2_result += mean_time_v2[i];
+    mean_cycles_v2_result += mean_cycles_v2[i];
+  }
+
+  mean_time_v2_result /= REPETICIONES;
+  mean_cycles_v2_result /= REPETICIONES;
+
+  printf("\n\n============================================\n");
+  printf("\t\tResultados version 2:");
+  printf("\nTiempo de ejecución: %f ms\n", mean_time_v2_result);
+  printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_v2_result);
+  printf("============================================\n");
+
+  elapsed = 0;
+
+  // Versión 3
+  for (i = 0; i < REPETICIONES; i++) {
+    start_cycle = rdtsc();
+    start = clock();
     firfilter_v3(vector_coef, vector_in, result_v3);
-    end = rdtsc();
-    sum_time += (double)(end - start);
-    sum_cycles += end - start;
+    end = clock();
+    end_cycle = rdtsc();
+
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+    mean_time_v3[i] = elapsed;
+    mean_cycles_v3[i] = end_cycle - start_cycle;
   }
 
-  media_time_v3 = sum_time / REPETICIONES;
-  media_cycles_v3 = sum_cycles / REPETICIONES;
+  // Calculo de la media v3
+  double mean_time_v3_result = 0;
+  uint64_t mean_cycles_v3_result = 0;
 
   for (i = 0; i < REPETICIONES; i++) {
-    start = rdtsc();
+    mean_time_v3_result += mean_time_v3[i];
+    mean_cycles_v3_result += mean_cycles_v3[i];
+  }
+
+  mean_time_v3_result /= REPETICIONES;
+  mean_cycles_v3_result /= REPETICIONES;
+
+  printf("\n\n============================================\n");
+  printf("\t\tResultados version 3:");
+  printf("\nTiempo de ejecución: %f ms\n", mean_time_v3_result);
+  printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_v3_result);
+  printf("============================================\n");
+
+  elapsed = 0;
+
+  // Versión 4
+  for (i = 0; i < REPETICIONES; i++) {
+    start_cycle = rdtsc();
+    start = clock();
     firfilter_v4(vector_coef, vector_in, result_v4);
-    end = rdtsc();
-    sum_time += (double)(end - start);
-    sum_cycles += end - start;
+    end = clock();
+    end_cycle = rdtsc();
+
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+    mean_time_v4[i] = elapsed;
+    mean_cycles_v4[i] = end_cycle - start_cycle;
   }
 
-  media_time_v4 = sum_time / REPETICIONES;
-  media_cycles_v4 = sum_cycles / REPETICIONES;
+  // Calculo de la media v4
+  double mean_time_v4_result = 0;
+  uint64_t mean_cycles_v4_result = 0;
 
   for (i = 0; i < REPETICIONES; i++) {
-    start = rdtsc();
-    firfilter_v5(vector_coef, vector_in, result_v5);
-    end = rdtsc();
-    sum_time += (double)(end - start);
-    sum_cycles += end - start;
+    mean_time_v4_result += mean_time_v4[i];
+    mean_cycles_v4_result += mean_cycles_v4[i];
   }
 
-  media_time_v5 = sum_time / REPETICIONES;
-  media_cycles_v5 = sum_cycles / REPETICIONES;
+  mean_time_v4_result /= REPETICIONES;
+  mean_cycles_v4_result /= REPETICIONES;
 
-  printf("============================================\n");
-  printf("\t\tResultados base:\n");
-  printf("Tiempo de ejecución versión base: %f ms\n", media_time_base);
-  printf("Ciclos de reloj versión base: %" PRIu64 "\n", media_cycles_base);
-  printf("============================================\n");
-
-  printf("\n============================================\n");
-  printf("\t\tResultados versión 1:\n");
-  printf("Tiempo de ejecución versión 1: %f ms\n", media_time_v1);
-  printf("Ciclos de reloj versión 1: %" PRIu64 "\n", media_cycles_v1);
+  printf("\n\n============================================\n");
+  printf("\t\tResultados version 4:");
+  printf("\nTiempo de ejecución: %f ms\n", mean_time_v4_result);
+  printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_v4_result);
   printf("============================================\n");
 
-  printf("\n============================================\n");
-  printf("\t\tResultados versión 2:\n");
-  printf("Tiempo de ejecución versión 2: %f ms\n", media_time_v2);
-  printf("Ciclos de reloj versión 2: %" PRIu64 "\n", media_cycles_v2);
-  printf("============================================\n");
+  elapsed = 0;
 
-  printf("\n============================================\n");
-  printf("\t\tResultados versión 3:\n");
-  printf("Tiempo de ejecución versión 3: %f ms\n", media_time_v3);
-  printf("Ciclos de reloj versión 3: %" PRIu64 "\n", media_cycles_v3);
-  printf("============================================\n");
+  // Versión 5
+  for (i = 0; i < REPETICIONES; i++) {
+    start_cycle = rdtsc();
+    start = clock();
+    firfilter_v5(vector_coef, vector_in, result_v5);
+    end = clock();
+    end_cycle = rdtsc();
 
-  printf("\n============================================\n");
-  printf("\t\tResultados versión 4:\n");
-  printf("Tiempo de ejecución versión 4: %f ms\n", media_time_v4);
-  printf("Ciclos de reloj versión 4: %" PRIu64 "\n", media_cycles_v4);
-  printf("============================================\n");
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+    mean_time_v5[i] = elapsed;
+    mean_cycles_v5[i] = end_cycle - start_cycle;
+  }
 
-  printf("\n============================================\n");
-  printf("\t\tResultados versión 5:\n");
-  printf("Tiempo de ejecución versión 5: %f ms\n", media_time_v5);
-  printf("Ciclos de reloj versión 5: %" PRIu64 "\n", media_cycles_v5);
+  // Calculo de la media v5
+  double mean_time_v5_result = 0;
+  uint64_t mean_cycles_v5_result = 0;
+
+  for (i = 0; i < REPETICIONES; i++) {
+    mean_time_v5_result += mean_time_v5[i];
+    mean_cycles_v5_result += mean_cycles_v5[i];
+  }
+
+  mean_time_v5_result /= REPETICIONES;
+  mean_cycles_v5_result /= REPETICIONES;
+
+  printf("\n\n============================================\n");
+  printf("\t\tResultados version 5:");
+  printf("\nTiempo de ejecución: %f ms\n", mean_time_v5_result);
+  printf("Ciclos de reloj: %" PRIu64 "\n", mean_cycles_v5_result);
   printf("============================================\n");
 
   free(vector_coef);

@@ -28,7 +28,7 @@
 #define N 7000   // Número de datos de entrada
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
-#define REPETICIONES 1000
+#define REPETICIONES 100
 
 /**
  * @brief Inicialización de los coeficientes del filtro FIR
@@ -85,7 +85,7 @@ float* inicializacion_vector_in() {
  */
 void firfilter(float* vector_coef, float* vector_data, float* result) {
   int i, j;
-  for (i = 0; i < N + COEF - 1; i++) {
+  for (i = 0; i < N; i++) {
     result[i] = 0;
     for (j = 0; j < COEF; j++) {
       result[i] += vector_coef[j] * vector_data[i - j];

@@ -93,6 +93,14 @@
   tabsize=2
 }
 
+% Configurar el estilo para el código en C++ y CUDA con colores
+\lstset{
+  style=mystyle,
+  language=C++,
+  morekeywords={__global__, __device__, __host__},
+  deletekeywords={__global__, __device__, __host__}
+}
+
 %==============================================================================
 % Cosas para la documentación LateX
 % % Sangría
@@ -208,9 +216,73 @@ La estructura básica de un filtro FIR es la siguiente:
 \end{figure}
 
 % Capitulo 2
-\chapter{Capitulo 2}
-% 2.1
-\section{Seccion 2.1}
+\chapter{Características del proyecto}
+El proyecto se divide en 5 versiones de filtros FIR:
+\begin{itemize}
+  \item Versión 1: Filtro FIR 
+  \item Versión 2: Incluye el uso de keywords, como \textbf{const} y \textbf{restrict}
+  \item Versión 3: Desenrrollado manual y optimizacion de bucles, condicionales, etc.
+  \item Versión 4: Utilización de \textbf{pragmas}
+  \item Versión 5: Uso de \textbf{intrínsecos}
+\end{itemize}
+
+En cada versión incluye la implementación de un filtro FIR, dependiendo de la versión, y la lectura de los valores
+de los coeficientes (Coeficientes.csv) y los valores de los datos de entrada (musica4.csv).
+
+En cuanto al profiling se optado por usar \emph{clock()}, que es una función que mide el tiempo de ejecución de un programa. En principio
+se pensó en usar \emph{gprof}, que es una herramienta de análisis de rendimiento para aplicaciones UNIX, pero no se pudo ya que los tiempos
+de ejecución eran muy pequeños y no se podía medir correctamente.
+
+Además, se ha calculado los ciclos de reloj de cada versión del filtro FIR. Para ello, se ha creado una función utilizando la instrucción
+\emph{rdtsc} (Real Time Stamp Counter) que mide el número de ciclos de reloj desde el último reinicio. La función es la siguiente:
+\begin{lstlisting}
+uint64_t rdtsc(){
+  unsigned int lo, hi;
+  __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+  return ((uint64_t)hi << 32) | lo;
+}
+\end{lstlisting}
+
+Lo que hace la función es utiliza la instrucción de ensamblador \emph{rdtsc} para leer el contador de tiempo de la CPU, y devuelve este 
+valor como un número de 64 bits pero dividido en dos partes de 32 bits, \emph{lo} es la parte baja y \emph{hi} es la parte alta. Entonces,
+se ejecuta la instrucción \emph{\_\_asm\_\_ \_\_volatile\_\_} que es una instrucción de ensamblador en línea que se utiliza para incrustar código
+ensamblador en el código C.
+
+El \emph{profiling} se ha hecho de la siguiente forma:
+\begin{lstlisting}
+start_cycle = rdtsc();
+start = clock();
+// --- Codigo a medir ---
+end = clock();
+end_cycle = rdtsc();
+\end{lstlisting}
+
+Por otra parte, para calcular el tiempo de ejecución y los ciclos de reloj se ha repetido \emph{N} veces, para obtener un promedio de los valores.
+En este caso, se ha decidido hacer 1000 repeticiones, pero se puede cambiar el valor de \emph{N}
+ya que se define como una constante en cada versión del filtro FIR.
+\begin{lstlisting}
+#define REPETICIONES 1000
+
+// Aplicacion del filtro FIR
+for (i = 0; i < REPETICIONES; i++) {
+  start_cycle = rdtsc();
+  start = clock();
+  firfilter(vector_coef, vector_in, result);
+  end = clock();
+  end_cycle = rdtsc();
+
+  elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+  mean_time[i] = elapsed;
+  mean_cycles[i] = end_cycle - start_cycle;
+}
+\end{lstlisting}
+
+\newpage
+
+% Capitulo 3
+\chapter{Implementación}
+\section*{Lectura de los coeficientes}
+
 
 \newpage
 
@@ -219,6 +291,7 @@ La estructura básica de un filtro FIR es la siguiente:
       \bibitem{1} Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
       \bibitem{2} \url{https://es.wikipedia.org/wiki/FIR_(Finite_Impulse_Response)}
       \bibitem{3} \url{https://es.wikipedia.org/wiki/Diseño_de_Filtros_de_Respuesta_Finita_al_Impulso}
+      \bibitem{4} \url{https://en.wikipedia.org/wiki/Gprof}
 \end{thebibliography}
 
 \end{document}

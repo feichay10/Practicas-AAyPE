@@ -219,7 +219,8 @@ La estructura básica de un filtro FIR es la siguiente:
 \chapter{Características del proyecto}
 El proyecto se divide en 5 versiones de filtros FIR:
 \begin{itemize}
-  \item Versión 1: Filtro FIR 
+  \item Versión 0: Filtro FIR base
+  \item Versión 1: Filtro FIR mejorado
   \item Versión 2: Incluye el uso de keywords, como \textbf{const} y \textbf{restrict}
   \item Versión 3: Desenrrollado manual y optimizacion de bucles, condicionales, etc.
   \item Versión 4: Utilización de \textbf{pragmas}
@@ -280,8 +281,103 @@ for (i = 0; i < REPETICIONES; i++) {
 \newpage
 
 % Capitulo 3
-\chapter{Implementación}
+\chapter{Implementaciones}
 \section*{Lectura de los coeficientes}
+Para leer los coeficientes del filtro FIR se ha creado la siguiente función:
+\begin{lstlisting}
+float* inicializacion_coeficientes() {
+  float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
+  int i = 0;
+  FILE* fich_coef = fopen("../data/Coeficientes.csv", "r");
+  if (fich_coef == NULL) {
+    printf("Error al abrir el archivo\n");
+    exit(1);
+  }
+
+  while (fscanf(fich_coef, "%f", &vector_coeficientes[i]) != EOF && i < COEF) {
+    i++;
+  }
+  fclose(fich_coef);
+
+  return vector_coeficientes;
+}
+\end{lstlisting}
+
+Lo que se hace es abrir el archivo \emph{Coeficientes.csv} que contiene los valores de los coeficientes del filtro FIR, y se lee cada valor
+hasta que se llegue al final del archivo o se haya leído todos los valores. Luego, se cierra el archivo y se devuelve el vector de coeficientes.
+
+\section*{Lectura de los datos de entrada}
+Para leer los datos de entrada del filtro FIR se ha creado la siguiente función:
+\begin{lstlisting}
+float* inicializacion_vector_in() {
+  float* array_data = (float*)malloc(N * sizeof(float));
+
+  int i = 0;
+  FILE* file_data = fopen("../data/musica4.csv", "r");
+  if (file_data == NULL) {
+    printf("Error al abrir el archivo\n");
+    exit(1);
+  }
+
+  while (fscanf(file_data, "%f", &array_data[i]) != EOF && i < N) {
+    i++;
+  }
+
+  fclose(file_data);
+
+  return array_data;
+}
+\end{lstlisting}
+
+Para la lectura de los datos de entrada se hace lo mismo que en la lectura de los coeficientes, se abre el archivo \emph{musica4.csv} que contiene
+los valores de los datos de entrada, se leen los valores hasta que se llegue al final del archivo o se haya leído todos los valores y se cierra el archivo.
+
+\newpage
+
+\section{Versión base}
+Para la implementación base se ha hecho la función \emph{firfilter()} que recibe los coeficientes del filtro FIR y los datos de entrada como punteros a float,
+y devuelve un puntero a float con los valores de la salida del filtro FIR. La función es la siguiente:
+
+\begin{lstlisting}
+float* firfilter(float* vector_coef, float* vector_data) {
+  float* result = (float*)malloc((N + COEF - 1) * sizeof(float));
+  int i, j;
+  for (i = 0; i < N + COEF - 1; i++) {
+    result[i] = 0;
+    for (j = 0; j < COEF; j++) {
+      if (i - j >= 0 && i - j < N) {
+        result[i] += vector_coef[j] * vector_data[i - j];
+      }
+    }
+  }
+
+  return result;
+}
+\end{lstlisting}
+
+Lo que hace la función es inicializar un vector de float con el tamaño de la suma de los tamaños de los vectores de coeficientes y de los datos de entrada.
+Luego, se inicializa un bucle que recorre el vector de salida, y dentro de este bucle se inicializa otro bucle que recorre el vector de coeficientes.
+Dentro de este segundo bucle se comprueba si el índice de la salida menos el índice del bucle interno es mayor o igual a 0 y menor que el tamaño del vector de datos de entrada.
+Si se cumple la condición, se multiplica el valor del coeficiente por el valor del dato de entrada y se suma al valor de la salida.
+
+\section{Versión 1}
+Para la versión 1 se ha mejorado la implementación base del filtro FIR. Lo que se ha hecho es trabajar directamente con los punteros de los vectores de coeficientes,
+de los datos de entrada y de la salida. Usar punteros directamente y no devolver un puntero a float con los valores de la salida del filtro FIR es más eficiente. Además, 
+se ha eliminado la condición del bucle interno, ya que se ha comprobado que no es necesario.
+
+\begin{lstlisting}
+void firfilter(float* vector_coef, float* vector_data, float* result) {
+  int i, j;
+  for (i = 0; i < N + COEF - 1; i++) {
+    result[i] = 0;
+    for (j = 0; j < COEF; j++) {
+      result[i] += vector_coef[j] * vector_data[i - j];
+    }
+  }
+}
+\end{lstlisting}
+
+\section{Versión 2}
 
 
 \newpage

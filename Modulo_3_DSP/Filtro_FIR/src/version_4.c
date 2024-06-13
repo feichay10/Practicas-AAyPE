@@ -8,7 +8,7 @@
  * Filtro Fir: version 1
  * @file version1.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief Version 1: Implementacion del filtro FIR
+ * @brief Version 4: Utilizar intrinsecos (intrinsics) para el filtro fir. 
  * 
  * @version 0.1
  * @date 2024-01-29
@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <xmmintrin.h>  // SSE intrinsics
 
 #define COEF 25  // Número de coeficientes del filtro
 #define N 7000     // Número de datos de entrada
@@ -59,7 +60,6 @@ float* inicializacion_coeficientes() {
  */
 float* inicializacion_vector_in() {
   float* array_data = (float*)malloc(N * sizeof(float));
-
   int i = 0;
   FILE* file_data = fopen("../data/musica4.csv", "r");
   if (file_data == NULL) {
@@ -70,26 +70,34 @@ float* inicializacion_vector_in() {
   while (fscanf(file_data, "%f", &array_data[i]) != EOF && i < N) {
     i++;
   }
-
   fclose(file_data);
 
   return array_data;
 }
 
 /**
- * @brief Aplicación del filtro FIR version 1
+ * @brief Aplicación del filtro FIR version 4 con intrinsecos
  * 
  * @param vector_coef 
  * @param vector_data 
  * @param result 
  */
-void firfilter(float* vector_coef, float* vector_data, float* result) {
+void firfilter(float* restrict vector_coef, float* restrict vector_data, float* restrict result) {
   int i, j;
+  __m128 coef, data, res;
+
   for (i = 0; i < N + COEF - 1; i++) {
-    result[i] = 0;
-    for (j = 0; j < COEF; j++) {
-      result[i] += vector_coef[i + j] * vector_data[i];
+    res = _mm_setzero_ps();
+    for (j = 0; j < COEF; j += 4) {
+      if (i - j >= 0) {
+        coef = _mm_loadu_ps(&vector_coef[j]);
+        data = _mm_loadu_ps(&vector_data[i - j]);
+        res = _mm_add_ps(res, _mm_mul_ps(coef, data));
+      }
     }
+    float temp[4];
+    _mm_storeu_ps(temp, res);
+    result[i] = temp[0] + temp[1] + temp[2] + temp[3];
   }
 }
 

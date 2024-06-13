@@ -9,9 +9,7 @@
  * @file version1.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
  * @brief Version 3: Asegurarse que no hay dos punteros que apunten a la misma 
- * variable y utilizar el pragma "restrict". Eso no acelera nada, pero contribuye 
- * a que el programa no pete cuando el compilador haga suposiciones agresivas 
- * (podría fallar por otras razones, no sólo por esa).
+ * variable y utilizar el pragma "restrict".
  * 
  * @version 0.1
  * @date 2024-01-29
@@ -20,13 +18,12 @@
  *
  */
 
+#include <inttypes.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <sys/time.h>
-#include <stdint.h>
-#include <inttypes.h>
 
 #define COEF 25  // Número de coeficientes del filtro
 #define N 7000     // Número de datos de entrada
@@ -70,12 +67,12 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
-void firfilter(float* vector_coef, float* vector_data, float* result) {
+void firfilter(float* restrict vector_coef, float* restrict vector_data, float* restrict result) {
   int i, j;
   for (i = 0; i < N + COEF - 1; i++) {
     result[i] = 0;
-    for (j = 0; j < COEF; j++) {
-      result[i] += vector_coef[i + j] * vector_data[i];
+    if (i - j >= 0) {
+      result[i] += vector_coef[j] * vector_data[i - j];
     }
   }
 }
@@ -89,7 +86,7 @@ uint64_t rdtsc(){
 int main() {
   float* vector_in = inicializacion_vector_in();
   float* vector_coef = inicializacion_coeficientes();
-  float* result = (float*)calloc(N + COEF - 1, sizeof(float));
+  float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos
@@ -101,18 +98,18 @@ int main() {
   float mean_time[REPETICIONES];
   uint64_t mean_cycles[REPETICIONES];
 
-  printf("============================================\n");
-  printf("\t\tCOEFICIENTES:\n");
-  for (i = 0; i < COEF; i++) {
-    printf("%f\n", vector_coef[i]);
-  }
-  printf("============================================\n\n\n");
-  printf("============================================\n");
-  printf("\t\tMusica4:\n");
-  for (i = 0; i < N + COEF - 1; i++) {
-    printf("%f\n", vector_in[i]);
-  }
-  printf("============================================\n\n\n");
+  // printf("============================================\n");
+  // printf("\t\tCOEFICIENTES:\n");
+  // for (i = 0; i < COEF; i++) {
+  //   printf("%f\n", vector_coef[i]);
+  // }
+  // printf("============================================\n\n\n");
+  // printf("============================================\n");
+  // printf("\t\tMusica4:\n");
+  // for (i = 0; i < N + COEF - 1; i++) {
+  //   printf("%f\n", vector_in[i]);
+  // }
+  // printf("============================================\n\n\n");
 
   // APLICACION DEL FIR FILTER
   for (i = 0; i < REPETICIONES; i++) {

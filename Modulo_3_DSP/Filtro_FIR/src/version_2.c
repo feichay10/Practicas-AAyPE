@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
 #include <time.h>
 
 #define COEF 25  // Número de coeficientes del filtro
@@ -33,6 +32,11 @@
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
 #define REPETICIONES 1000
 
+/**
+ * @brief Inicialización de los coeficientes del filtro FIR
+ * 
+ * @return float* 
+ */
 float* inicializacion_coeficientes() {
   float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
   int i = 0;
@@ -50,6 +54,11 @@ float* inicializacion_coeficientes() {
   return vector_coeficientes;
 }
 
+/**
+ * @brief Inicialización de los datos de entrada
+ * 
+ * @return float* 
+ */
 float* inicializacion_vector_in() {
   float* array_data = (float*)malloc(N * sizeof(float));
 
@@ -69,6 +78,13 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
+/**
+ * @brief Aplicación del filtro FIR version 2
+ * 
+ * @param vector_coef 
+ * @param vector_data 
+ * @param result 
+ */
 void firfilter(float* vector_coef, float* vector_data, float* result) {
   int i = 0;
   for (i = 0; i < COEF; i++) {
@@ -112,6 +128,11 @@ void firfilter(float* vector_coef, float* vector_data, float* result) {
   }
 }
 
+/**
+ * @brief Función para calcular los ciclos de reloj
+ * 
+ * @return uint64_t 
+ */
 uint64_t rdtsc() {
   unsigned int lo, hi;
   __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
@@ -133,18 +154,18 @@ int main() {
   float mean_time[REPETICIONES];
   uint64_t mean_cycles[REPETICIONES];
 
-  printf("============================================\n");
-  printf("\t\tCOEFICIENTES:\n");
-  for (i = 0; i < COEF; i++) {
-    printf("%f\n", vector_coef[i]);
-  }
-  printf("============================================\n\n\n");
-  printf("============================================\n");
-  printf("\t\tMusica4:\n");
-  for (i = 0; i < N + COEF - 1; i++) {
-    printf("%f\n", vector_in[i]);
-  }
-  printf("============================================\n\n\n");
+  // printf("============================================\n");
+  // printf("\t\tCOEFICIENTES:\n");
+  // for (i = 0; i < COEF; i++) {
+  //   printf("%f\n", vector_coef[i]);
+  // }
+  // printf("============================================\n\n\n");
+  // printf("============================================\n");
+  // printf("\t\tMusica4:\n");
+  // for (i = 0; i < N + COEF - 1; i++) {
+  //   printf("%f\n", vector_in[i]);
+  // }
+  // printf("============================================\n\n\n");
 
   // APLICACION DEL FIR FILTER
   for (i = 0; i < REPETICIONES; i++) {

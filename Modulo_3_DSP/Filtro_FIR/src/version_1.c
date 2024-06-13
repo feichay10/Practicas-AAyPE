@@ -111,7 +111,7 @@ int main() {
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos
-  struct timespec start, end;
+  clock_t start, end;
   double elapsed = 0;
   uint64_t start_cycle, end_cycle;
 
@@ -119,15 +119,15 @@ int main() {
   float mean_time[REPETICIONES];
   uint64_t mean_cycles[REPETICIONES];
 
-  // APLICACION DEL FIR FILTER
+  // Aplicación del filtro FIR
   for (i = 0; i < REPETICIONES; i++) {
     start_cycle = rdtsc();
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    start = clock();
     firfilter(vector_coef, vector_in, result);
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    end = clock();
     end_cycle = rdtsc();
 
-    elapsed = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
     mean_time[i] = elapsed;
     mean_cycles[i] = end_cycle - start_cycle;
   }

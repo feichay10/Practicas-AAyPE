@@ -116,26 +116,31 @@ int main() {
   float* restrict vector_in = inicializacion_vector_in();
   float* restrict vector_coef = inicializacion_coeficientes();
   float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));
+  int i;
 
-  struct timespec start, end;
+  // Variables para el cálculo del tiempo de ejecución y ciclos
+  clock_t start, end;
   double elapsed = 0;
   uint64_t start_cycle, end_cycle;
 
+  // Variables para el cálculo de la media de tiempo y ciclos
   float mean_time[REPETICIONES];
   uint64_t mean_cycles[REPETICIONES];
 
-  for (int i = 0; i < REPETICIONES; i++) {
+  // Aplicación del filtro FIR
+  for (i = 0; i < REPETICIONES; i++) {
     start_cycle = rdtsc();
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    start = clock();
     firfilter(vector_coef, vector_in, result);
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    end = clock();
     end_cycle = rdtsc();
 
-    elapsed = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
+    elapsed = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
     mean_time[i] = elapsed;
     mean_cycles[i] = end_cycle - start_cycle;
   }
 
+  // Calculo de la media
   double mean_time_result = 0;
   uint64_t mean_cycles_result = 0;
 

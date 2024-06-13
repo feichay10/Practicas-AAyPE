@@ -5,10 +5,11 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * Filtro Fir: version 1
- * @file version1.c
+ * Filtro Fir: version 2
+ * @file version_2.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief Version 2: Desenrrollar el bucle interior del filtro FIR
+ * @brief Version 2: Uso de keywords, como const y restrict en variables
+ * que consideres.
  *
  * @version 0.1
  * @date 2024-01-29
@@ -25,9 +26,7 @@
 #include <time.h>
 
 #define COEF 25  // Número de coeficientes del filtro
-#define N 7000     // Número de datos de entrada
-
-#define BLOCK 10 // Número de BLOCKs en los que se divide el bucle
+#define N 7000   // Número de datos de entrada
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
 #define REPETICIONES 1000
@@ -79,51 +78,20 @@ float* inicializacion_vector_in() {
 }
 
 /**
- * @brief Aplicación del filtro FIR version 2
+ * @brief Aplicación del filtro FIR version 2 con keywords
  * 
  * @param vector_coef 
  * @param vector_data 
  * @param result 
  */
-void firfilter(float* vector_coef, float* vector_data, float* result) {
-  int i = 0;
-  for (i = 0; i < COEF; i++) {
-    int indice = 0;
-    int iteraciones = (COEF / BLOCK);
-    int resto = (COEF % BLOCK);
-    while (iteraciones-- > 0) {
-      result[i] += vector_data[indice + 10 + i] * vector_coef[indice + 10 - 1];
-      result[i] += vector_data[indice + 9 + i] * vector_coef[indice + 9 - 1];
-      result[i] += vector_data[indice + 8 + i] * vector_coef[indice + 8 - 1];
-      result[i] += vector_data[indice + 7 + i] * vector_coef[indice + 7 - 1];
-      result[i] += vector_data[indice + 6 + i] * vector_coef[indice + 6 - 1];
-      result[i] += vector_data[indice + 5 + i] * vector_coef[indice + 5 - 1];
-      result[i] += vector_data[indice + 4 + i] * vector_coef[indice + 4 - 1];
-      result[i] += vector_data[indice + 3 + i] * vector_coef[indice + 3 - 1];
-      result[i] += vector_data[indice + 2 + i] * vector_coef[indice + 2 - 1];
-      result[i] += vector_data[indice + 1 + i] * vector_coef[indice + 1 - 1];
-      indice += BLOCK;
-    }
-    switch (resto) {
-      case 9:
-        result[i] += vector_data[indice + 9 + i] * vector_coef[indice + 9 - 1];
-      case 8:
-        result[i] += vector_data[indice + 8 + i] * vector_coef[indice + 8 - 1];
-      case 7:
-        result[i] += vector_data[indice + 7 + i] * vector_coef[indice + 7 - 1];
-      case 6:
-        result[i] += vector_data[indice + 6 + i] * vector_coef[indice + 6 - 1];
-      case 5:
-        result[i] += vector_data[indice + 5 + i] * vector_coef[indice + 5 - 1];
-      case 4:
-        result[i] += vector_data[indice + 4 + i] * vector_coef[indice + 4 - 1];
-      case 3:
-        result[i] += vector_data[indice + 3 + i] * vector_coef[indice + 3 - 1];
-      case 2:
-        result[i] += vector_data[indice + 2 + i] * vector_coef[indice + 2 - 1];
-      case 1:
-        result[i] += vector_data[indice + 1 + i] * vector_coef[indice + 1 - 1];
-      case 0:;
+void firfilter(float* restrict vector_coef, float* restrict vector_data, float* restrict result) {
+  int i, j;
+  for (i = 0; i < N + COEF - 1; i++) {
+    result[i] = 0;
+    for (j = 0; j < COEF; j++) {
+      if (i - j >= 0) {
+        result[i] += vector_coef[j] * vector_data[i - j];
+      }
     }
   }
 }
@@ -140,9 +108,9 @@ uint64_t rdtsc() {
 }
 
 int main() {
-  float* vector_in = inicializacion_vector_in();
-  float* vector_coef = inicializacion_coeficientes();
-  float* result = (float*)calloc(N + COEF - 1, sizeof(float));
+  float* restrict vector_in = inicializacion_vector_in();
+  float* restrict vector_coef = inicializacion_coeficientes();
+  float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos
@@ -153,19 +121,6 @@ int main() {
   // Variables para el cálculo de la media de tiempo y ciclos
   float mean_time[REPETICIONES];
   uint64_t mean_cycles[REPETICIONES];
-
-  // printf("============================================\n");
-  // printf("\t\tCOEFICIENTES:\n");
-  // for (i = 0; i < COEF; i++) {
-  //   printf("%f\n", vector_coef[i]);
-  // }
-  // printf("============================================\n\n\n");
-  // printf("============================================\n");
-  // printf("\t\tMusica4:\n");
-  // for (i = 0; i < N + COEF - 1; i++) {
-  //   printf("%f\n", vector_in[i]);
-  // }
-  // printf("============================================\n\n\n");
 
   // APLICACION DEL FIR FILTER
   for (i = 0; i < REPETICIONES; i++) {

@@ -6,7 +6,7 @@
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
  * Filtro Fir: version 1
- * @file version1.c
+ * @file version_1.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
  * @brief Version 1: Implementacion del filtro FIR
  * 
@@ -25,7 +25,7 @@
 #include <time.h>
 
 #define COEF 25  // Número de coeficientes del filtro
-#define N 7000     // Número de datos de entrada
+#define N 7000   // Número de datos de entrada
 
 // Número de repeticiones para el cálculo de la media de tiempo y ciclos
 #define REPETICIONES 1000
@@ -118,19 +118,6 @@ int main() {
   // Variables para el cálculo de la media de tiempo y ciclos
   float mean_time[REPETICIONES];
   uint64_t mean_cycles[REPETICIONES];
-
-  // printf("============================================\n");
-  // printf("\t\tCOEFICIENTES:\n");
-  // for (i = 0; i < COEF; i++) {
-  //   printf("%f\n", vector_coef[i]);
-  // }
-  // printf("============================================\n\n\n");
-  // printf("============================================\n");
-  // printf("\t\tMusica4:\n");
-  // for (i = 0; i < N + COEF - 1; i++) {
-  //   printf("%f\n", vector_in[i]);
-  // }
-  // printf("============================================\n\n\n");
 
   // APLICACION DEL FIR FILTER
   for (i = 0; i < REPETICIONES; i++) {

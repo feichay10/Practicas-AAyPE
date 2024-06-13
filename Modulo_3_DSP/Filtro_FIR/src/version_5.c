@@ -5,11 +5,10 @@
  * Grado en Ingeniería Informática
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
- * Filtro Fir: version 4
- * @file version_4.c
+ * Filtro Fir: version 5
+ * @file version_5.c
  * @author Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)
- * @brief Version 4: Utilizar pragmas. Pudiendo llegar a sustituir el desenrrollado
- * manual hecho por los pragmas.
+ * @brief Version 5: Utilizar intrinsecos (intrinsics) para el filtro fir. 
  * 
  * @version 0.1
  * @date 2024-01-29
@@ -24,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <xmmintrin.h>  // SSE intrinsics
 
 #define COEF 25  // Número de coeficientes del filtro
 #define N 7000   // Número de datos de entrada
@@ -75,24 +75,29 @@ float* inicializacion_vector_in() {
   return array_data;
 }
 
-
 /**
- * @brief Aplicación del filtro FIR version 4 con desenrrollado hecho por pragmas
+ * @brief Aplicación del filtro FIR version 4 con intrinsecos
  * 
  * @param vector_coef 
  * @param vector_data 
  * @param result 
  */
-void firfilter(float* vector_coef, float* vector_data, float* result) {
+void firfilter(float* restrict vector_coef, float* restrict vector_data, float* restrict result) {
   int i, j;
+  __m128 coef, data, res;
 
-  #pragma MUST_ITERATE(1000)
   for (i = 0; i < N + COEF - 1; i++) {
-    result[i] = 0;
-    #pragma unroll(3)
-    for (j = 0; j < COEF; j++) {
-      result[i] += vector_coef[i + j] * vector_data[i];
+    res = _mm_setzero_ps();
+    for (j = 0; j < COEF; j += 4) {
+      if (i - j >= 0) {
+        coef = _mm_loadu_ps(&vector_coef[j]);
+        data = _mm_loadu_ps(&vector_data[i - j]);
+        res = _mm_add_ps(res, _mm_mul_ps(coef, data));
+      }
     }
+    float temp[4];
+    _mm_storeu_ps(temp, res);
+    result[i] = temp[0] + temp[1] + temp[2] + temp[3];
   }
 }
 
@@ -108,7 +113,6 @@ uint64_t rdtsc(){
 }
 
 int main() {
-  #pragma DATA_ALIGN(8)
   float* restrict vector_in = inicializacion_vector_in();
   float* restrict vector_coef = inicializacion_coeficientes();
   float* restrict result = (float*)calloc(N + COEF - 1, sizeof(float));

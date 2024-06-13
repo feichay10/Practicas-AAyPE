@@ -1,0 +1,11 @@
+- Versión 1: Programar el doble bucle para el filtro fir
+- Versión 2: Desenrrollar el bucle interior y comprobar que es más rápido
+- Versión 3: Asegurarse que no hay dos punteros que apunten a la misma - variable y utilizar el pragma "restrict". Eso no acelera nada, pero contribuye a que el programa no pete cuando el compilador haga suposiciones agresi- vas (podría fallar por otras razones, no sólo por esa).
+- Versión 4: utilizar intrinsecos (intrinsics) para el filtro fir. Después de esta lista les dejo algunos (pueden explorar otros)
+- Versión 5: Compilar con /O1
+- Versión 6: Compilar con /O2 
+- Versión 7: Compilar con /O3
+
+profiling:
+queria usar gprof pero los tiempos los da en segundos y los hace en ms por lo que
+hice uso de clock_gettime()

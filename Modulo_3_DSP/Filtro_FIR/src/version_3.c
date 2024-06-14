@@ -29,42 +29,50 @@
 #define COEF 25  // Número de coeficientes del filtro
 #define N 7000   // Número de datos de entrada
 
-#define BLOCK 10  // Número de BLOCKs en los que se divide el bucle
+// Número de REPETITIONS para el cálculo de la media de tiempo y ciclos
+#define REPETITIONS 100
 
-// Número de repeticiones para el cálculo de la media de tiempo y ciclos
-#define REPETICIONES 100
-
-float* inicializacion_coeficientes() {
-  float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
-  FILE* fich_coef = fopen("../data/Coeficientes.csv", "r");
-  if (fich_coef == NULL) {
+/**
+ * @brief Inicialización de los coeficientes del filtro FIR
+ * 
+ * @return float* 
+ */
+float* init_coefficients() {
+  float* array_coeff = (float*)malloc(COEF * sizeof(float));
+  int i = 0;
+  FILE* file_coeff = fopen("../data/Coeficientes.csv", "r");
+  if (file_coeff == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
   }
 
-  for (int i = 0; i < COEF; i++) {
-    if (fscanf(fich_coef, "%f", &vector_coeficientes[i]) == EOF) {
-      break;
-    }
+  while (fscanf(file_coeff, "%f", &array_coeff[i]) != EOF && i < COEF) {
+    i++;
   }
-  fclose(fich_coef);
+  fclose(file_coeff);
 
-  return vector_coeficientes;
+  return array_coeff;
 }
 
-float* inicializacion_vector_in() {
+/**
+ * @brief Inicialización de los datos de entrada
+ * 
+ * @return float* 
+ */
+float* init_data() {
   float* array_data = (float*)malloc(N * sizeof(float));
+
+  int i = 0;
   FILE* file_data = fopen("../data/musica4.csv", "r");
   if (file_data == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
   }
 
-  for (int i = 0; i < N; i++) {
-    if (fscanf(file_data, "%f", &array_data[i]) == EOF) {
-      break;
-    }
+  while (fscanf(file_data, "%f", &array_data[i]) != EOF && i < N) {
+    i++;
   }
+
   fclose(file_data);
 
   return array_data;
@@ -112,9 +120,9 @@ uint64_t rdtsc() {
 }
 
 int main() {
-  float* vector_in = inicializacion_vector_in();
-  float* vector_coef = inicializacion_coeficientes();
-  float* result = (float*)calloc(N + COEF - 1, sizeof(float));
+  float* vector_in = init_data();
+  float* vector_coef = init_coefficients();
+  float* result = (float*)malloc((N + COEF - 1) * sizeof(float));
   int i;
 
   // Variables para el cálculo del tiempo de ejecución y ciclos
@@ -123,11 +131,11 @@ int main() {
   uint64_t start_cycle, end_cycle;
 
   // Variables para el cálculo de la media de tiempo y ciclos
-  float mean_time[REPETICIONES];
-  uint64_t mean_cycles[REPETICIONES];
+  float mean_time[REPETITIONS];
+  uint64_t mean_cycles[REPETITIONS];
 
   // Aplicación del filtro FIR
-  for (i = 0; i < REPETICIONES; i++) {
+  for (i = 0; i < REPETITIONS; i++) {
     start_cycle = rdtsc();
     start = clock();
     firfilter(vector_coef, vector_in, result);
@@ -143,13 +151,13 @@ int main() {
   double mean_time_result = 0;
   uint64_t mean_cycles_result = 0;
 
-  for (int i = 0; i < REPETICIONES; i++) {
+  for (int i = 0; i < REPETITIONS; i++) {
     mean_time_result += mean_time[i];
     mean_cycles_result += mean_cycles[i];
   }
 
-  mean_time_result /= REPETICIONES;
-  mean_cycles_result /= REPETICIONES;
+  mean_time_result /= REPETITIONS;
+  mean_cycles_result /= REPETITIONS;
 
   printf("============================================\n");
   printf("\t\tResultados:");

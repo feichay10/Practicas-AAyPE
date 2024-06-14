@@ -1,0 +1,134 @@
+===== Ejecutando version_base.c===== 
+Tiempo de ejecución: 0.713330 ms
+Ciclos de reloj: 2428786
+
+Ejecutando version_base.c con -O0
+Tiempo de ejecución: 0.687150 ms
+Ciclos de reloj: 2340352
+
+Ejecutando version_base.c con -O1
+Tiempo de ejecución: 0.454830 ms
+Ciclos de reloj: 1550775
+
+Ejecutando version_base.c con -O2
+Tiempo de ejecución: 0.463840 ms
+Ciclos de reloj: 1582754
+
+Ejecutando version_base.c con -O3
+Tiempo de ejecución: 0.419260 ms
+Ciclos de reloj: 1430712
+
+=====================================================
+
+	===== Ejecutando version_1.c =====
+Ejecutando version_1.c off
+Tiempo de ejecución: 0.645240 ms
+Ciclos de reloj: 2198216
+
+Ejecutando version_1.c con -O0
+Tiempo de ejecución: 0.729720 ms
+Ciclos de reloj: 2487734
+
+Ejecutando version_1.c con -O1
+Tiempo de ejecución: 0.345730 ms
+Ciclos de reloj: 1179075
+
+Ejecutando version_1.c con -O2
+Tiempo de ejecución: 0.109920 ms
+Ciclos de reloj: 376537
+
+Ejecutando version_1.c con -O3
+Tiempo de ejecución: 0.036740 ms
+Ciclos de reloj: 127742
+
+=====================================================
+
+	===== Ejecutando version_2.c =====
+Ejecutando version_2.c off
+Tiempo de ejecución: 0.694345 ms
+Ciclos de reloj: 2366514
+
+Ejecutando version_2.c con -O0
+Tiempo de ejecución: 0.708585 ms
+Ciclos de reloj: 2415793
+
+Ejecutando version_2.c con -O1
+Tiempo de ejecución: 0.156248 ms
+Ciclos de reloj: 534665
+
+Ejecutando version_2.c con -O2
+Tiempo de ejecución: 0.096853 ms
+Ciclos de reloj: 331607
+
+Ejecutando version_2.c con -O3
+Tiempo de ejecución: 0.032457 ms
+Ciclos de reloj: 113038
+
+=====================================================
+
+	===== Ejecutando version_3.c =====
+Ejecutando version_3.c off
+Tiempo de ejecución: 0.507040 ms
+Ciclos de reloj: 1728052
+
+Ejecutando version_3.c con -O0
+Tiempo de ejecución: 0.578650 ms
+Ciclos de reloj: 1972823
+
+Ejecutando version_3.c con -O1
+Tiempo de ejecución: 0.420290 ms
+Ciclos de reloj: 1433469
+
+Ejecutando version_3.c con -O2
+Tiempo de ejecución: 0.101190 ms
+Ciclos de reloj: 348056
+
+Ejecutando version_3.c con -O3
+Tiempo de ejecución: 0.092440 ms
+Ciclos de reloj: 317318
+
+=====================================================
+
+	===== Ejecutando version_4.c =====
+Ejecutando version_4.c off
+Tiempo de ejecución: 0.584410 ms
+Ciclos de reloj: 1991131
+
+Ejecutando version_4.c con -O0
+Tiempo de ejecución: 0.649160 ms
+Ciclos de reloj: 2211676
+
+Ejecutando version_4.c con -O1
+Tiempo de ejecución: 0.132350 ms
+Ciclos de reloj: 453169
+
+Ejecutando version_4.c con -O2
+Tiempo de ejecución: 0.107600 ms
+Ciclos de reloj: 368584
+
+Ejecutando version_4.c con -O3
+Tiempo de ejecución: 0.043200 ms
+Ciclos de reloj: 150558
+
+=====================================================
+
+	===== Ejecutando version_5.c =====
+Ejecutando version_5.c off
+Tiempo de ejecución: 0.125920 ms
+Ciclos de reloj: 431063
+
+Ejecutando version_5.c con -O0
+Tiempo de ejecución: 0.126730 ms
+Ciclos de reloj: 433782
+
+Ejecutando version_5.c con -O1
+Tiempo de ejecución: 0.020580 ms
+Ciclos de reloj: 72140
+
+Ejecutando version_5.c con -O2
+Tiempo de ejecución: 0.020250 ms
+Ciclos de reloj: 71081
+
+Ejecutando version_5.c con -O3
+Tiempo de ejecución: 0.019260 ms
+Ciclos de reloj: 67652

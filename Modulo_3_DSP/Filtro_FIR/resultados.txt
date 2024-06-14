@@ -1,0 +1,129 @@
+Versión base off:
+  Tiempo de ejecución: 0.686350 ms
+  Ciclos de reloj: 2336651
+
+Versión base O0:
+  Tiempo de ejecución: 0.653410 ms
+  Ciclos de reloj: 2224720
+
+Versión base O1:
+  Tiempo de ejecución: 0.355950 ms
+  Ciclos de reloj: 1212921
+
+Versión base O2:
+  Tiempo de ejecución: 0.322680 ms
+  Ciclos de reloj: 1099958
+
+Versión base O3:
+  Tiempo de ejecución: 0.321940 ms
+  Ciclos de reloj: 1097628
+
+=======================================================================
+
+Versión 1 off:
+  Tiempo de ejecución: 0.542620 ms
+  Ciclos de reloj: 1849069
+
+Versión 1 O0:
+  Tiempo de ejecución: 0.539160 ms
+  Ciclos de reloj: 1836593
+
+Versión 1 O1:
+  Tiempo de ejecución: 0.294340 ms
+  Ciclos de reloj: 1003215
+
+Versión 1 O2:
+  Tiempo de ejecución: 0.102240 ms
+  Ciclos de reloj: 349864
+
+Versión 1 O3:
+  Tiempo de ejecución: 0.028110 ms
+  Ciclos de reloj: 97467
+
+=======================================================================
+
+Versión 2 off:
+  Tiempo de ejecución: 0.590532 ms
+  Ciclos de reloj: 2011620
+
+Versión 2 O0:
+  Tiempo de ejecución: 0.587926 ms
+  Ciclos de reloj: 2002169
+
+Versión 2 O1:
+  Tiempo de ejecución: 0.120157 ms
+  Ciclos de reloj: 411047
+
+Versión 2 O2:
+  Tiempo de ejecución: 0.097767 ms
+  Ciclos de reloj: 334884
+
+Versión 2 O3:
+  Tiempo de ejecución: 0.031861 ms
+  Ciclos de reloj: 110578
+
+=======================================================================
+
+Versión 3 off:
+  Tiempo de ejecución: 0.516320 ms
+  Ciclos de reloj: 1758842
+
+Versión 3 O0:
+  Tiempo de ejecución: 0.541410 ms
+  Ciclos de reloj: 1846202
+
+Versión 3 O1:
+  Tiempo de ejecución: 0.430710 ms
+  Ciclos de reloj: 1469602
+
+Versión 3 O2:
+  Tiempo de ejecución: 0.081840 ms
+  Ciclos de reloj: 281132
+
+Versión 3 O3:
+  Tiempo de ejecución: 0.078820 ms
+  Ciclos de reloj: 270689
+
+=======================================================================
+
+Versión 4 off:
+  Tiempo de ejecución: 0.687710 ms
+  Ciclos de reloj: 2343170
+
+Versión 4 O0:
+  Tiempo de ejecución: 0.591850 ms
+  Ciclos de reloj: 2016569
+
+Versión 4 01:
+  Tiempo de ejecución: 0.159950 ms
+  Ciclos de reloj: 547177
+
+Versión 4 O2:
+  Tiempo de ejecución: 0.107720 ms
+  Ciclos de reloj: 369235
+
+Versión 4 O3:
+  Tiempo de ejecución: 0.029960 ms
+  Ciclos de reloj: 104292
+
+=======================================================================
+
+Versión 5 off:
+  Tiempo de ejecución: 0.134570 ms
+  Ciclos de reloj: 460487
+
+Versión 5 O0:
+  Tiempo de ejecución: 0.129370 ms
+  Ciclos de reloj: 442618
+
+Versión 5 O1:
+  Tiempo de ejecución: 0.023110 ms
+  Ciclos de reloj: 81309
+
+Versión 5 O2:
+  Tiempo de ejecución: 0.020160 ms
+  Ciclos de reloj: 72086
+
+Versión 5 O3:
+  Tiempo de ejecución: 0.019010 ms
+  Ciclos de reloj: 66657

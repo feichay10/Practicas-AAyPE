@@ -221,13 +221,13 @@ El proyecto se divide en 5 versiones de filtros FIR:
 \begin{itemize}
   \item Versión 0: Filtro FIR base
   \item Versión 1: Filtro FIR mejorado
-  \item Versión 2: Incluye el uso de keywords, como \textbf{const} y \textbf{restrict}
+  \item Versión 2: Incluye el uso de keywords, como \emph{\textbf{const}} y \emph{\textbf{restrict}}
   \item Versión 3: Desenrrollado manual y optimizacion de bucles, condicionales, etc.
-  \item Versión 4: Utilización de \textbf{pragmas}
-  \item Versión 5: Uso de \textbf{intrínsecos}
+  \item Versión 4: Utilización de \emph{\textbf{pragmas}}
+  \item Versión 5: Uso de \emph{\textbf{intrinsics}}
 \end{itemize}
 
-En cada versión incluye la implementación de un filtro FIR, dependiendo de la versión, y la lectura de los valores
+En cada versión incluye una implementación de un filtro FIR, dependiendo de la versión, y la lectura de los valores
 de los coeficientes (Coeficientes.csv) y los valores de los datos de entrada (musica4.csv).
 
 En cuanto al profiling se optado por usar \emph{clock()}, que es una función que mide el tiempo de ejecución de un programa. En principio
@@ -262,10 +262,10 @@ Por otra parte, para calcular el tiempo de ejecución y los ciclos de reloj se h
 En este caso, se ha decidido hacer 100 repeticiones, pero se puede cambiar el valor de \emph{N}
 ya que se define como una constante en cada versión del filtro FIR.
 \begin{lstlisting}
-#define REPETICIONES 1000
+#define REPETITIONS 100
 
 // Aplicacion del filtro FIR
-for (i = 0; i < REPETICIONES; i++) {
+for (i = 0; i < REPETITIONS; i++) {
   start_cycle = rdtsc();
   start = clock();
   firfilter(vector_coef, vector_in, result);
@@ -285,21 +285,21 @@ for (i = 0; i < REPETICIONES; i++) {
 \section*{Lectura de los coeficientes}
 Para leer los coeficientes del filtro FIR se ha creado la siguiente función:
 \begin{lstlisting}
-float* inicializacion_coeficientes() {
-  float* vector_coeficientes = (float*)malloc(COEF * sizeof(float));
+float* init_coefficients() {
+  float* array_coeff = (float*)malloc(COEF * sizeof(float));
   int i = 0;
-  FILE* fich_coef = fopen("../data/Coeficientes.csv", "r");
-  if (fich_coef == NULL) {
+  FILE* file_coeff = fopen("../data/Coeficientes.csv", "r");
+  if (file_coeff == NULL) {
     printf("Error al abrir el archivo\n");
     exit(1);
   }
 
-  while (fscanf(fich_coef, "%f", &vector_coeficientes[i]) != EOF && i < COEF) {
+  while (fscanf(file_coeff, "%f", &array_coeff[i]) != EOF && i < COEF) {
     i++;
   }
-  fclose(fich_coef);
+  fclose(file_coeff);
 
-  return vector_coeficientes;
+  return array_coeff;
 }
 \end{lstlisting}
 
@@ -309,7 +309,7 @@ hasta que se llegue al final del archivo o se haya leído todos los valores. Lue
 \section*{Lectura de los datos de entrada}
 Para leer los datos de entrada del filtro FIR se ha creado la siguiente función:
 \begin{lstlisting}
-float* inicializacion_vector_in() {
+float* init_data() {
   float* array_data = (float*)malloc(N * sizeof(float));
 
   int i = 0;
@@ -336,7 +336,7 @@ los valores de los datos de entrada, se leen los valores hasta que se llegue al 
 
 \section{Versión base}
 Para la implementación base se ha hecho la función \emph{firfilter()} que recibe los coeficientes del filtro FIR y los datos de entrada como punteros a float,
-y devuelve un puntero a float con los valores de la salida del filtro FIR. La función es la siguiente:
+y devuelve un puntero a float con los valores de la salida del filtro FIR.
 
 \begin{lstlisting}
 float* firfilter(float* vector_coef, float* vector_data) {
@@ -360,10 +360,12 @@ Luego, se inicializa un bucle que recorre el vector de salida, y dentro de este 
 Dentro de este segundo bucle se comprueba si el índice de la salida menos el índice del bucle interno es mayor o igual a 0 y menor que el tamaño del vector de datos de entrada.
 Si se cumple la condición, se multiplica el valor del coeficiente por el valor del dato de entrada y se suma al valor de la salida.
 
+\newpage
+
 \section{Versión 1 - Mejora de la implementación base}
 Para la versión 1 se ha mejorado la implementación base del filtro FIR. Lo que se ha hecho es trabajar directamente con los punteros de los vectores de coeficientes,
 de los datos de entrada y de la salida. Usar punteros directamente y no devolver un puntero a float con los valores de la salida del filtro FIR es más eficiente. Además, 
-se ha eliminado la condición del bucle interno, ya que se ha comprobado que no es necesario.
+se ha eliminado la condición del bucle interno, ya que no es necesario.
 
 \begin{lstlisting}
 void firfilter(float* vector_coef, float* vector_data, float* result) {
@@ -377,12 +379,12 @@ void firfilter(float* vector_coef, float* vector_data, float* result) {
 }
 \end{lstlisting}
 
-\newpage
+% \newpage
 
 \section{Versión 2 - Uso de keywords}
 En la segunda implementación se ha incluido el uso de keywords, como \emph{const} y \emph{restrict}. La keyword \emph{\textbf{const}} se utiliza para declarar
 una variable como constante, es decir, que no se puede modificar su valor. La keyword \emph{\textbf{restrict}} se utiliza para indicar que dos punteros no se solapan,
-es decir, que no apuntan a la misma dirección de memoria. Esto permite al compilador realizar optimizaciones en el código. La función es la siguiente:
+es decir, que no apuntan a la misma dirección de memoria. Esto permite al compilador realizar optimizaciones en el código.
 
 \begin{lstlisting}
 void firfilter(const float* restrict const vector_coef,
@@ -405,7 +407,6 @@ En la tercera implementación se ha desenrrollado manualmente el bucle interior.
 el número de instrucciones dentro de un bucle para disminuir el número de iteraciones del bucle. En este caso, se ha desenrrollado el bucle interior
 expandiendo cada iteración de \emph{j} manualmente, en este caso se ha desenrrollado 25 veces. Además, se agrega una condición para evitar que se acceda
 a límites fuera del vector de datos de entrada. Por último, se multiplica por los elementos correspondientes del vector de datos y se acumulan en el resultado.
-El código es el siguiente:
 
 \begin{lstlisting}
 void firfilter(const float* restrict const vector_coef, 
@@ -415,7 +416,6 @@ void firfilter(const float* restrict const vector_coef,
   for (i = 0; i < N; i++) {
     result[i] = 0;
 
-    // Desenrollado manual del bucle interno
     if (i >= 24) result[i] += vector_coef[24] * vector_data[i - 24];
     if (i >= 23) result[i] += vector_coef[23] * vector_data[i - 23];
     if (i >= 22) result[i] += vector_coef[22] * vector_data[i - 22];
@@ -500,15 +500,94 @@ void firfilter(const float* restrict const vector_coef,
 \end{lstlisting}
 
 \chapter{Resultados}
+En esta sección se presentan los resultados de las implementaciones del filtro FIR. Se ha medido el tiempo de ejecución (en milisegundos) y los ciclos de reloj de cada versión
+del filtro FIR. Se ha hecho 100 repeticiones para obtener un promedio de los valores. Los resultados se presentan en la siguiente tabla:
 
-\newpage
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    \textbf{Versión \textbackslash{} Nivel Optimización} & \multicolumn{2}{c|}{\textbf{Off}} & \multicolumn{2}{c|}{\textbf{0}} \\
+    \hline
+    & Tiempo ejecución & Ciclo reloj & Tiempo ejecución & Ciclo reloj \\
+    \hline
+    \textbf{Base} & 0.686350 & 2336651 & 0.653410 & 2224720 \\
+    \hline
+    \textbf{1} & 0.542620 & 1849069 & 0.539160 & 1836593 \\
+    \hline
+    \textbf{2} & 0.590532 & 2011620 & 0.587926 & 2002169 \\
+    \hline
+    \textbf{3} & 0.516320 & 1758842 & 0.541410 & 1846202 \\
+    \hline
+    \textbf{4} & 0.687710 & 2343170 & 0.591850 & 2016569 \\
+    \hline
+    \textbf{5} & 0.134570 & 460487 & 0.129370 & 442618 \\
+    \hline
+  \end{tabular}
+  \caption{Resultados de las implementaciones del filtro FIR}
+\end{table}
 
-\chapter{Bibliografía} % En formato APA
-\begin{thebibliography}{99}
-      \bibitem{1} Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
-      \bibitem{2} \url{https://es.wikipedia.org/wiki/FIR_(Finite_Impulse_Response)}
-      \bibitem{3} \url{https://es.wikipedia.org/wiki/Diseño_de_Filtros_de_Respuesta_Finita_al_Impulso}
-      \bibitem{4} \url{https://en.wikipedia.org/wiki/Gprof}
-\end{thebibliography}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    \textbf{Versión \textbackslash{} Nivel Optimización} & \multicolumn{2}{c|}{\textbf{1}} & \multicolumn{2}{c|}{\textbf{2}} \\
+    \hline
+    & Tiempo ejecución & Ciclo reloj & Tiempo ejecución & Ciclo reloj \\
+    \hline
+    \textbf{Base} & 0.355950 & 1212921 & 0.322680 & 1099958 \\
+    \hline
+    \textbf{1} & 0.294340 & 1003215 & 0.102240 & 349864 \\
+    \hline
+    \textbf{2} & 0.120157 & 411047 & 0.097767 & 334884 \\
+    \hline
+    \textbf{3} & 0.430710 & 1469602 & 0.081840 & 281132 \\
+    \hline
+    \textbf{4} & 0.159950 & 547177 & 0.107720 & 369235 \\
+    \hline
+    \textbf{5} & 0.023110 & 81309 & 0.020160 & 72086 \\
+    \hline
+  \end{tabular}
+  \caption{Resultados de las implementaciones del filtro FIR}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    \textbf{Versión \textbackslash{} Nivel Optimización} & \multicolumn{2}{c|}{\textbf{3}} \\
+    \hline
+    & Tiempo ejecución & Ciclo reloj \\
+    \hline
+    \textbf{Base} & 0.321940 & 1097628 \\
+    \hline
+    \textbf{1} & 0.028110 & 97467 \\
+    \hline
+    \textbf{2} & 0.031861 & 110578 \\
+    \hline
+    \textbf{3} & 0.078820 & 270689 \\
+    \hline
+    \textbf{4} & 0.029960 & 104292 \\
+    \hline
+    \textbf{5} & 0.019010 & 66657 \\
+    \hline
+  \end{tabular}
+  \caption{Resultados de las implementaciones del filtro FIR}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.36]{img/grafica.png}
+  \caption{Gráfica de los resultados de las implementaciones del filtro FIR}
+  \label{fig:gráfica de los resultados de las implementaciones del filtro fir}
+\end{figure}
+
+Como podemos observar en la tabla y en la gráfica, la versión 5 es la que tiene un mejor rendimiento en cuanto a tiempo de ejecución y ciclos de reloj. Además, al usar las optimizaciones \emph{O0} hasta \emph{O3} se puede observar que el rendimiento mejora en todas las versiones del filtro FIR. 
+Por otro lado, la versión 5 es la más eficiente en cuanto a tiempo de ejecución y ciclos de reloj, ya que se ha utilizado intrínsecos SIMD 128 bits. 
+
+\chapter{Conclusiones}
+Este proyecto ha servido para ver cómo se puede mejorar el rendimiento de un filtro FIR utilizando diferentes técnicas de optimización. Además, implementar diferentes versiones del filtro y comparar su rendimiento. Se ha podido observar que al aplicar optimizaciones en el código, como el uso de keywords, pragmas e intrínsecos, se consigue una mejora en el rendimiento del filtro FIR. Además, se ha podido
+medir el tiempo de ejecución y los ciclos de reloj de cada versión del filtro FIR, y se ha podido observar que la versión 5 es la más eficiente en cuanto a tiempo de ejecución y ciclos de reloj. Por último, se ha podido observar que al aplicar las optimizaciones \emph{O0} hasta \emph{O3} se 
+consigue una mejora en el rendimiento de todas las versiones del filtro FIR.
 
 \end{document}

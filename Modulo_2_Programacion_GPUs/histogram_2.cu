@@ -57,12 +57,9 @@
 #define THREADS_PER_BLOCK 512
 #define BLOCKS_PER_GRID ((N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK)
 
-#define FILE_TIME "times_2.txt" // Archivo para almacenar los tiempos de ejecución
-
 // Variables globales en el device
 __device__ int vector_V[N];  // Vector V (vector) de un numero elevado N de elementos enteros aleatorios
 __device__ int vector_H[M];  // Vector H (Histograma) que tiene M elementos que representan "cajas"
-
 
 /**
  * @brief Check the return value of the CUDA runtime API call and exit 
@@ -112,19 +109,6 @@ float stopAndPrintTimer(cudaEvent_t *start, cudaEvent_t *stop) {
   CUDA_CHECK_RETURN(cudaEventDestroy(*stop));
 
   return milliseconds;
-}
-
-void timesOnFile(float max, float min, float mean) {
-  std::ofstream archivo(FILE_TIME, std::ios::app);
-  
-  if (archivo.is_open()) {
-      archivo << N << ";" << mean << ";" << max << ";" << min << std::endl;
-
-      archivo.close();
-      std::cout << "Contenido añadido al archivo correctamente." << std::endl;
-  } else {
-      std::cerr << "Error al abrir el archivo." << std::endl;
-  }
 }
 
 // ====================================================================================================
@@ -251,9 +235,6 @@ int main() {
   std::cout << "Tiempo medio:  " << mean / REPETITIONS << " ms" << std::endl;
   std::cout << "Tiempo maximo: " << max << " ms" << std::endl;
   std::cout << "Tiempo minimo: " << min << " ms" << std::endl;
-
-  // Guardar los tiempos de ejecución y N en un archivo
-  timesOnFile(max, min, mean / REPETITIONS);
 
   return 0;
 }

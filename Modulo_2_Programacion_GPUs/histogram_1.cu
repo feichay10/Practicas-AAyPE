@@ -6,22 +6,12 @@
  * Asignatura: Arquitecturas Avanzadas y de Propósito Específico
  * Curso: 4º
  * @file histograma.cu
- * @brief Version 1 histograma en CUDA: Realizar un histograma de un vector V de
- * un número elevado N de elementos enteros aleatorios. El histograma consiste 
- * en un vector H que tiene M elementos que representan "cajas". En cada caja se 
- * cuenta el número de veces que ha aparecido un elemento del vector V con el 
- * valor adecuado para asignarlo a esa caja (normalmente cada caja representa un 
- * rango o intervalo de valores). En nuestro caso, para simplificar la asignación
- * del elemento de V a su caja correspondiente del histograma, vamos a realizar 
- * la operación ValorElementoV Módulo M, que nos da directamente el índice de la 
- * caja del histograma a la que pertenecerá ese elemento y cuyo contenido deberemos 
- * incrementar. Se sugiere como N un valor del orden de millones de elementos y 
- * como M, 8 cajas.
+ * @brief Version 1 histograma en CUDA: Como implementación base (que podremos 
+ * mejorar en tiempo o no) se pide crear tantos hilos como elementos de V para 
+ * que cada uno se encargue de ir al elemento que le corresponda en V e 
+ * incremente la caja correcta en el vector histograma H (posiblemente de forma 
+ * atómica).
  * 
- * Como implementación base (que podremos mejorar en tiempo o no) se pide crear 
- * tantos hilos como elementos de V para que cada uno se encargue de ir
- * al elemento que le corresponda en V e incremente la caja correcta en el
- * vector histograma H (posiblemente de forma atómica).
  * @version 0.1
  *
  * Compilar y ejecutar con: nvcc histograma.cu -o histograma
@@ -45,8 +35,6 @@
 
 #define THREADS_PER_BLOCK 512
 #define BLOCKS_PER_GRID ((N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK)
-
-#define FILE_TIME "times_1.txt" // Archivo para almacenar los tiempos de ejecución
 
 // Variables globales en el device
 __device__ int vector_V[N]; // Vector V (vector) de un numero elevado N de elementos enteros aleatorios
@@ -95,19 +83,6 @@ float stopAndPrintTimer(cudaEvent_t *start, cudaEvent_t *stop) {
   CUDA_CHECK_RETURN(cudaEventDestroy(*stop));
 
   return milliseconds;
-}
-
-void timesOnFile(float max, float min, float mean) {
-  std::ofstream archivo(FILE_TIME, std::ios::app);
-  
-  if (archivo.is_open()) {
-      archivo << N << ";" << mean << ";" << max << ";" << min << std::endl;
-      
-      archivo.close();
-      std::cout << "Contenido añadido al archivo correctamente." << std::endl;
-  } else {
-      std::cerr << "Error al abrir el archivo." << std::endl;
-  }
 }
 
 // ====================================================================================================
@@ -218,9 +193,6 @@ int main() {
   std::cout << "Tiempo medio:  " << mean / REPETITIONS << " ms" << std::endl;
   std::cout << "Tiempo maximo: " << max << " ms" << std::endl;
   std::cout << "Tiempo minimo: " << min << " ms" << std::endl;
-
-  // Guardar los tiempos de ejecución y N en un archivo
-  timesOnFile(max, min, mean / REPETITIONS);
 
   return 0;
 }
